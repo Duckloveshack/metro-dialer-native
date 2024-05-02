@@ -1,12 +1,14 @@
 import React, { useState, Component } from "react";
-import { StyleSheet, View, Text, FlatList, Image } from "react-native";
-import sampleStoreData from "./Data.json";
+import { StyleSheet, View, Text, FlatList, Image, Button } from "react-native";
 import { fonts } from "../styles/fonts";
 import ToggleSwitch from "../components/core/ToggleSwitch";
 import AddAlarmBottomBar from "../components/compound/AddAlarmBottomBar";
+import { TouchableOpacity } from "react-native-gesture-handler";
+
 
 const AlarmMain = ({
-  navigation
+  navigation,
+  setTabIndex
 }) => {  
 
   const alarmData = [
@@ -49,20 +51,26 @@ const AlarmMain = ({
 
   return (
     <View style={styles.container}>
+      {/* <Button
+        title="Test setTabIndex function"
+        onPress={() => setTabIndex(1)}
+      /> */}
       <FlatList
-        contentContainerStyle={styles.list}        
+        contentContainerStyle={styles.list}
         data={alarmData}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
       />
-      <AddAlarmBottomBar navigation={navigation} methods={
-        {
-          addAlarm: async () => {
-            console.log("Clicked on Add New Alarm");
-            // navigate to add alarm page using this cb
+      <View style={styles.bottomBarContainer}>
+        <AddAlarmBottomBar navigation={navigation} methods={
+          {
+            addAlarm: async () => {
+              console.log("Clicked on Add New Alarm");
+              // navigate to "add alarm" page using this cb
+            },
           }
-        }
-      }></AddAlarmBottomBar>
+        }></AddAlarmBottomBar>
+      </View>
     </View>
     
   );
@@ -98,10 +106,10 @@ const AlarmItem = ({
 
 const styles = StyleSheet.create({
     container: {
-      // flex: 1,
+      flex: 1,
       backgroundColor: "black",
       marginTop: 25,
-      height: "80%" // So we can see the bottom bar (TODO: Make it responsive)
+      // height: "80%" // So we can see the bottom bar (TODO: Make it responsive)
     },
     list: {
       paddingBottom: 30,
@@ -112,6 +120,12 @@ const styles = StyleSheet.create({
       marginStart: 10,
       marginBottom: 14,
       width: "100%"
+    },
+    bottomBarContainer: {
+      width: "100%",
+      position: 'absolute',
+      bottom: 0,
+      flex: 1,
     },
   });
   

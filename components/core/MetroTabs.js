@@ -26,7 +26,8 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("screen");
  */
 const MetroTabs = ({
   screens, 
-  rightOverlapWidth=20
+  currentScreenIndex = 0,
+  rightOverlapWidth = 20
 }) => {
   const SCREEN_SNAP_INTERVAL = SCREEN_WIDTH - rightOverlapWidth;
   // console.log(screens);
@@ -71,6 +72,21 @@ const MetroTabs = ({
     headerItemsWidthArray.value[index+1] = headerItemsWidthArray.value[index] + width*-1; // negative cause header translates to left
   }, []);
 
+  const setTabIndex = (index) => {
+    console.log("####### Tab index set: " + index);
+    animatedRef.current
+      ?.scrollTo({ animatedRef: animatedRef, x: index * SCREEN_SNAP_INTERVAL, animated: true });
+  }
+
+  const renderItem = (item, index) => {
+    const ScreenComponent = item.screen;
+    return (
+      <View key={item.key}>
+        <ScreenComponent setTabIndex={setTabIndex} />
+      </View>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <Animated.View
@@ -96,18 +112,39 @@ const MetroTabs = ({
 
       <Animated.ScrollView
         horizontal
-        bounces={false}
+        bounces={true}
         ref={animatedRef}
         onScroll={scrollHandler}
         scrollEventThrottle={16}
-        // decelerationRate={0.9}
+        pagingEnabled={true}
+        snapToAlignment={'start'}
+        decelerationRate={'fast'}
+        // overScrollMode={"never"} to fix a stupid Android 14 bug.
+        // Ref 1: https://github.com/facebook/react-native/issues/41034
+        // Ref 2: https://issuetracker.google.com/issues/286422637?pli=1
+        overScrollMode={"never"} 
         snapToInterval={SCREEN_SNAP_INTERVAL}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.screenList}
       >
+        {/* {screens.map((item) => (
+          <View 
+            key={item.key} 
+            style={[ styles.screenContainer, {width: SCREEN_SNAP_INTERVAL} ]}>
+              {item.screen}
+          </View>
+        ))} */}
+        
+        {/* Adding setTabIndex prop to screens so children can change tabs */}
         {screens.map((item) => (
-          <View style={[ styles.screenContainer, {width: SCREEN_SNAP_INTERVAL} ]}>{item.screen}</View>
+          <View 
+            key={item.key} 
+            style={[ styles.screenContainer, {width: SCREEN_SNAP_INTERVAL} ]}>
+              {React.cloneElement(item.screen, { setTabIndex })}
+          </View>
         ))}
+
+        {/* {screens.map((item, index) => renderItem(item, index))} */}
       </Animated.ScrollView>
       
     </View>
@@ -157,7 +194,7 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
   },
   screenContainer: {
-    height: SCREEN_HEIGHT - 0, // account for container padding top (120 original)
+    height: SCREEN_HEIGHT - 170, // account for container padding top (120 original)
   },
   screenList: {
     paddingEnd: 20,

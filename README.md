@@ -8,4 +8,10 @@ Follow the instructions given there.
 
 ## Demo screenshots:
 
+### Alarm
 ![Alarm screen](./screenshots/alarm-demo.jpg)
+
+### Timer
+![Timer screen 1](./screenshots/timer-demo-1.jpg)
+
+![Timer screen 2](./screenshots/timer-demo-2.jpg)

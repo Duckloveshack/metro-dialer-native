@@ -3,7 +3,7 @@ import { Plus } from "react-native-feather";
 import { QuickMenu } from "../core/MenuBar";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const AddAlarmBottomBar = ({
+const NewTimerBottomBar = ({
     navigation,
     methods
 }) => {
@@ -11,8 +11,8 @@ const AddAlarmBottomBar = ({
     <QuickMenu 
       options={[
         {
-          text: "add",
-          onPress: methods.addAlarm,
+          text: "new",
+          onPress: methods.newTimer,
           Icon: <Plus width={20} stroke={"white"} strokeWidth={3}/>
         }
       ]}
@@ -20,5 +20,5 @@ const AddAlarmBottomBar = ({
   )
 }
 
-export default AddAlarmBottomBar;
+export default NewTimerBottomBar;
 
