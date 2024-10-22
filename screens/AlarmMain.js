@@ -2,7 +2,7 @@ import React, { useState, Component } from "react";
 import { StyleSheet, View, Text, FlatList, Image, Button } from "react-native";
 import { fonts } from "../styles/fonts";
 import ToggleSwitch from "../components/core/ToggleSwitch";
-import AddAlarmBottomBar from "../components/compound/AddAlarmBottomBar";
+import AddAlarmBottomBar from "../components/compound/MainBottomBar";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 
@@ -61,16 +61,7 @@ const AlarmMain = ({
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
       />
-      <View style={styles.bottomBarContainer}>
-        <AddAlarmBottomBar navigation={navigation} methods={
-          {
-            addAlarm: async () => {
-              console.log("Clicked on Add New Alarm");
-              // navigate to "add alarm" page using this cb
-            },
-          }
-        }></AddAlarmBottomBar>
-      </View>
+
     </View>
     
   );

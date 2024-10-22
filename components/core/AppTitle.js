@@ -15,7 +15,6 @@ const styles = StyleSheet.create({
     marginTop: 2,
     // paddingLeft: 10,
     fontSize: 14,
-    textTransform: "uppercase",
     color: "white",
     fontWeight: "bold",
     }

@@ -8,6 +8,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AlarmMain from './screens/AlarmMain';
 import TimerMain from './screens/TimerMain';
 import TimerNew from './screens/TimerNew';
+import { MenuBar } from './components/core/MenuBar';
+import MainBottomBar from './components/compound/MainBottomBar';
 
 const Stack = createNativeStackNavigator();
 
@@ -50,15 +52,22 @@ export default function App() {
 const ClockMain = ({navigation, route}) => {
   return (
     <View style={{backgroundColor: "black", }}>
-      <AppTitle title={"clock"}></AppTitle>
+      <AppTitle title={"Fake GSM Network"}></AppTitle>
       <MetroTabs
         rightOverlapWidth={0}
         screens={[
-          { key: "0", title: "alarm", screen: <AlarmMain navigation={navigation} route={route}/> },
-          { key: "1", title: "timer", screen: <TimerMain navigation={navigation} route={route}/> },
-          { key: "2", title: "world clock", screen: <TestScreen navigation={navigation} route={route}/> },
+          { key: "0", title: "speed dial", screen: <AlarmMain navigation={navigation} route={route}/> },
+          { key: "1", title: "history", screen: <TimerMain navigation={navigation} route={route}/> }
         ]}
       />
+      <MainBottomBar navigation={navigation} methods={
+        {
+          addAlarm: async () => {
+            console.log("Clicked on Add New Alarm");
+            // navigate to "add alarm" page using this cb
+          },
+        }
+      }/>
     </View>
   );
 }

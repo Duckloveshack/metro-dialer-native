@@ -126,6 +126,7 @@ const MetroTabs = ({
         snapToInterval={SCREEN_SNAP_INTERVAL}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.screenList}
+        style={"scroll-behavior: smooth"}
       >
         {/* {screens.map((item) => (
           <View 
@@ -180,7 +181,7 @@ const HeaderItem = ({ item, index, maxLen, scrollViewX, onPress, onLayout, scree
       <Animated.Text style={[
         styles.tabText,
         animatedHeaderColorStyle,
-        fonts.regular
+        fonts.light
       ]}>
         {item.title}
       </Animated.Text>
