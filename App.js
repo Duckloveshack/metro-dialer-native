@@ -10,6 +10,7 @@ import TimerMain from './screens/TimerMain';
 import TimerNew from './screens/TimerNew';
 import { MenuBar } from './components/core/MenuBar';
 import MainBottomBar from './components/compound/MainBottomBar';
+import { Voicemail, Search, Book, Plus } from "react-native-feather";
 
 const Stack = createNativeStackNavigator();
 
@@ -32,7 +33,7 @@ export default function App() {
           headerShown: false
         }
       }>
-        <Stack.Screen name="ClockMain" component={ClockMain} />
+        <Stack.Screen name="PhoneMain" component={PhoneMain} />
         <Stack.Screen name="TimerNew" component={TimerNew} />
         {/* Add more screens here so we can navigate to them */}
       </Stack.Navigator>
@@ -49,7 +50,7 @@ export default function App() {
 // Because, if navigation.navigate is used, only that comp will be rendered without MetroTab
 // Comps that don't need MetroTab, can be navigated to using navigation.navigate. Just 
 // add them to Stack.screen above.
-const ClockMain = ({navigation, route}) => {
+const PhoneMain = ({navigation, route}) => {
   return (
     <View style={{backgroundColor: "black", }}>
       <AppTitle title={"Fake GSM Network"}></AppTitle>
@@ -57,17 +58,18 @@ const ClockMain = ({navigation, route}) => {
         rightOverlapWidth={0}
         screens={[
           { key: "0", title: "speed dial", screen: <AlarmMain navigation={navigation} route={route}/> },
-          { key: "1", title: "history", screen: <TimerMain navigation={navigation} route={route}/> }
+          { key: "1", title: "history", screen: <TestScreen navigation={navigation} route={route}/> }
         ]}
+        bottomBar
       />
-      <MainBottomBar navigation={navigation} methods={
+      {/* <MainBottomBar navigation={navigation} methods={
         {
           addAlarm: async () => {
             console.log("Clicked on Add New Alarm");
             // navigate to "add alarm" page using this cb
           },
         }
-      }/>
+      }/> */}
     </View>
   );
 }

@@ -24,6 +24,10 @@ const ShortMenu = ({ children, handleExpand }) => {
 
 export const MenuBar = ({ options, controls, height = 14 }) => {
     const [expanded, setExpanded] = useState(false);
+    const what = () => {
+      console.log("test")
+    }
+    
     return <Animatable.View
       transition={["height"]}
       duration={250}
@@ -145,8 +149,7 @@ export const MenuBar = ({ options, controls, height = 14 }) => {
     );
   };
 
-export const CombinedBar = ({ options, controls, height = 14, disabled = false }) => {
-    const [expanded, setExpanded] = useState(false);
+export const CombinedBar = ({ options, controls, height = 14, disabled = false, barExpanded = false, expanded, setExpanded }) => {
     const AnimatedView = Animatable.createAnimatableComponent(View);
 
     return (
@@ -168,7 +171,7 @@ export const CombinedBar = ({ options, controls, height = 14, disabled = false }
           <View style={{ width: "100%", flexDirection: "row", height: expanded? 80: 55, marginBottom: -10 }}>
             <View style={{ width: '15%' }} />
             <Animatable.View easing={"ease-out-back"} duration={300} animation="fadeInUp" style={{ width: '70%', justifyContent: 'center', flexDirection: 'row'}}>
-              {controls.map((control, index) => {
+              {controls?.map((control, index) => {
                 return (
                   <View
                     style={{
@@ -182,7 +185,7 @@ export const CombinedBar = ({ options, controls, height = 14, disabled = false }
                     }}
                     key={index}
                   >
-                    <RoundedButton Icon={control.Icon} action={console.log("test1")} disabled={disabled}/>
+                    <RoundedButton Icon={control.Icon} action={control.onPress} disabled={disabled}/>
                     {expanded && (
                       <Animatable.View 
                         animation="fadeIn" 
@@ -219,15 +222,16 @@ export const CombinedBar = ({ options, controls, height = 14, disabled = false }
           </View>
           {expanded && (
             <View className="flex flex-col align-left pl-4 py-4">
-                {options.map((option, index) => {
+                {options?.map((option, index) => {
                     return(
                     <AnimatedView animation="fadeInUp" duration={500} delay={50*index}>
                         <Link
                             to={"https://google.com"}
                             classOverride="text-xl py-2"
                             text={option.text}
-                            onPress={() => {console.log(index)}}
+                            onPress={option.onPress}
                             disabled={option.disabled}
+                            key={index}
                         />
                     </AnimatedView>
                     );
@@ -237,3 +241,4 @@ export const CombinedBar = ({ options, controls, height = 14, disabled = false }
         </Animatable.View>
       );
 }
+

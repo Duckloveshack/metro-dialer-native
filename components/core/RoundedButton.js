@@ -1,16 +1,23 @@
-import { View, Text } from "react-native";
-import { Copy } from "react-native-feather";
+import { View, Text, TouchableWithoutFeedback } from "react-native";
+import * as Animatable from "react-native-animatable"
 
-const RoundedButton = ({
-    classOverrides = "",
-    Icon
-}) => {
-    return (
-        <View className={`rounded-full border-white border-2 h-9 w-9 flex items-center justify-center ${classOverrides}`}>
-            {/* <Copy  width={20} stroke={"white"}/> */}
-            {Icon}
-        </View>
-    )
-}
+const RoundedButton = ({ classOverrides = "", Icon, action, disabled=false }) => {
+  return (
+    <TouchableWithoutFeedback
+      onPress={() => {
+        action();
+      }}
+    >
+      <Animatable.View easing={"ease-out-back"} duration={300} animation="fadeInUp"
+        className={`rounded-full border-2 h-9 w-9 flex items-center justify-center ${
+          disabled ? "border-[#8a8a8a]" : "border-white"
+        } ${classOverrides}`}
+      >
+        {/* <Copy  width={20} stroke={"white"}/> */}
+        {Icon}
+      </Animatable.View>
+    </TouchableWithoutFeedback>
+  );
+};
 
-export default RoundedButton; 
+export default RoundedButton;

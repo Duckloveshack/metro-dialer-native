@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState, createContext } from "react";
 import Animated, {
   interpolate,
   interpolateColor,
@@ -7,11 +7,14 @@ import Animated, {
   useAnimatedRef,
   useAnimatedScrollHandler,
 } from "react-native-reanimated";
-import { View, StyleSheet, Dimensions, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Dimensions, TouchableOpacity, TouchableWithoutFeedback } from "react-native";
 import { fonts } from "../../styles/fonts";
-
+import { CombinedBar } from "./MenuBar";
+ 
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("screen");
+
+export const bottomBarContext = createContext(() => {});
 
 // slightly smaller snap to value to make the next screen peep out
 // Normal value is 20. Making it 0 for testing. 
@@ -26,9 +29,14 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("screen");
  */
 const MetroTabs = ({
   screens, 
+  bottomBar,
   currentScreenIndex = 0,
   rightOverlapWidth = 20
 }) => {
+  const [bottomBarElements, setBottomBarElements] = useState(null)
+  const [tabIndex, setTabIndex] = useState(0);
+  const [expanded, setExpanded] = useState(false)
+
   const SCREEN_SNAP_INTERVAL = SCREEN_WIDTH - rightOverlapWidth;
   // console.log(screens);
   const screenCnt = screens.length;
@@ -40,6 +48,7 @@ const MetroTabs = ({
   const headerItemsWidthArray = useSharedValue(new Array(screenCnt+1).fill(0));
   const scrollHandler = useAnimatedScrollHandler((event) => {
     scrollViewX.value = event.contentOffset.x;
+    //scrollEndHandler()
   });
 
   const animatedHeaderTransformStyle = useAnimatedStyle(() => {
@@ -62,7 +71,7 @@ const MetroTabs = ({
   // scrolls to the correct screen when one of the tabs are pressed
   const onTabPress = useCallback(async (index) => {
     animatedRef.current
-      ?.scrollTo({ animatedRef: animatedRef, x: index * SCREEN_SNAP_INTERVAL, animated: true });
+      ?.scrollToIndex({ animatedRef: animatedRef, index: index, animated: true });
   }, []);
 
   // Get total header width so we can apply parallax accordingly
@@ -72,23 +81,38 @@ const MetroTabs = ({
     headerItemsWidthArray.value[index+1] = headerItemsWidthArray.value[index] + width*-1; // negative cause header translates to left
   }, []);
 
-  const setTabIndex = (index) => {
-    console.log("####### Tab index set: " + index);
-    animatedRef.current
-      ?.scrollTo({ animatedRef: animatedRef, x: index * SCREEN_SNAP_INTERVAL, animated: true });
-  }
+  // const setTabIndex = (index) => {
+  //   console.log("####### Tab index set: " + index);
+  //   animatedRef.current
+  //     ?.scrollTo({ animatedRef: animatedRef, x: index * SCREEN_SNAP_INTERVAL, animated: true });
+  // }
 
-  const renderItem = (item, index) => {
-    const ScreenComponent = item.screen;
-    return (
-      <View key={item.key}>
-        <ScreenComponent setTabIndex={setTabIndex} />
-      </View>
-    );
-  };
+  const listItem = ({item}) => {
+    return(
+      <bottomBarContext.Provider value={item.key == tabIndex? setBottomBarElements : () => {}}>
+        <View 
+          key={item.key} 
+          style={[ styles.screenContainer, {width: SCREEN_SNAP_INTERVAL} ]}>
+            {item.screen}
+        </View>
+      </bottomBarContext.Provider>)
+    }
+
+  const onViewableItemsChanged = async ({viewableItems, index}) => {
+    if (viewableItems.length !=0) {
+      setTabIndex(viewableItems[0].index)
+    } else {
+      setBottomBarElements({})
+    }
+    //setBottomBarElements(viewableItems[0]?.item.bottomBarElements)
+  }
 
   return (
     <View style={styles.container}>
+      <View onStartShouldSetResponder={(e) => {
+        if (expanded) setExpanded(false)
+        return expanded;
+      }}>
       <Animated.View
         style={[
           styles.tabContainer, 
@@ -110,7 +134,8 @@ const MetroTabs = ({
         ))}
       </Animated.View>
 
-      <Animated.ScrollView
+      <bottomBarContext.Provider value={setBottomBarElements}>
+      <Animated.FlatList
         horizontal
         bounces={true}
         ref={animatedRef}
@@ -119,35 +144,25 @@ const MetroTabs = ({
         pagingEnabled={true}
         snapToAlignment={'start'}
         decelerationRate={'fast'}
-        // overScrollMode={"never"} to fix a stupid Android 14 bug.
-        // Ref 1: https://github.com/facebook/react-native/issues/41034
-        // Ref 2: https://issuetracker.google.com/issues/286422637?pli=1
-        overScrollMode={"never"} 
+        overScrollMode={'never'}
         snapToInterval={SCREEN_SNAP_INTERVAL}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.screenList}
-        style={"scroll-behavior: smooth"}
-      >
-        {/* {screens.map((item) => (
-          <View 
-            key={item.key} 
-            style={[ styles.screenContainer, {width: SCREEN_SNAP_INTERVAL} ]}>
-              {item.screen}
-          </View>
-        ))} */}
-        
-        {/* Adding setTabIndex prop to screens so children can change tabs */}
-        {screens.map((item) => (
-          <View 
-            key={item.key} 
-            style={[ styles.screenContainer, {width: SCREEN_SNAP_INTERVAL} ]}>
-              {React.cloneElement(item.screen, { setTabIndex })}
-          </View>
-        ))}
 
-        {/* {screens.map((item, index) => renderItem(item, index))} */}
-      </Animated.ScrollView>
-      
+        viewabilityConfig={{itemVisiblePercentThreshold: 60}}
+        onViewableItemsChanged={onViewableItemsChanged}
+        
+        data={screens}
+        renderItem={listItem}
+      />
+      </bottomBarContext.Provider>
+      </View>
+      {/* <View ref={bottomRef}>
+        {bottomBar}
+      </View> */}
+      {bottomBar && (
+        <CombinedBar expanded = {expanded} setExpanded={setExpanded} {...bottomBarElements}/>
+      )}
     </View>
   );
 };

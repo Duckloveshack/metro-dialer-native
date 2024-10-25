@@ -1,15 +1,52 @@
-import React, { useState, Component } from "react";
+import React, { useState, Component, useContext } from "react";
 import { StyleSheet, View, Text, FlatList, Image, Button } from "react-native";
 import { fonts } from "../styles/fonts";
 import ToggleSwitch from "../components/core/ToggleSwitch";
 import AddAlarmBottomBar from "../components/compound/MainBottomBar";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { bottomBarContext } from "../components/core/MetroTabs";
+import { Voicemail, Book, Search } from "react-native-feather";
 
 
 const AlarmMain = ({
   navigation,
   setTabIndex
 }) => {  
+
+  const setBottomBarElements = useContext(bottomBarContext);
+  setBottomBarElements({controls: [
+    {
+      text: "voicemail",
+      onPress: () => {console.log("voicemail")},
+      Icon: <Voicemail width={20} stroke={"white"} strokeWidth={3}/>
+    },
+    {
+      text: "keypad",
+      onPress: () => {console.log("keypad")},
+      Icon: <Voicemail width={20} stroke={"white"} strokeWidth={3}/>,
+      disabled: false
+    },
+    {
+      text: "phone book",
+      onPress: () => {console.log("phone book")},
+      Icon: <Book width={20} stroke={"white"} strokeWidth={3}/>
+    },
+    {
+      text: "search",
+      onPress: () => {console.log("search")},
+      Icon: <Search width={20} stroke={"white"} strokeWidth={3}/>
+    }
+  ], options: [
+    {
+      text: "settings",
+      onPress: () => { console.log("settimgs") }
+    },
+    {
+      text: "delete all",
+      onPress: null,
+      disabled: true
+    }
+  ]})
 
   const alarmData = [
     {
@@ -55,12 +92,13 @@ const AlarmMain = ({
         title="Test setTabIndex function"
         onPress={() => setTabIndex(1)}
       /> */}
-      <FlatList
+      {/* <FlatList
         contentContainerStyle={styles.list}
         data={alarmData}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
-      />
+      /> */}
+      <Text style={[itemStyles.time]}>I haven't started working on this part yet</Text>
 
     </View>
     
@@ -77,11 +115,11 @@ const AlarmItem = ({
   const handleToggleSwitch = () => {
     setIsAlarmOn(!isAlarmOn);
   };
-  const repeatText = alarmRepeat && alarmRepeat.length > 0 ? alarmRepeat.join(', ') : 'Only once';
+  const repeatText = alarmRepeat && alarmRepeat.length > 0 ? alarmRepeat.join(', ') : 'Only once'
 
   return (
     <View style={styles.itemContainer}>
-      <View style={styles.infoContainer}>
+      {/* <View style={styles.infoContainer}>
         <Text style={[itemStyles.time, fonts.regular]}>{alarmTime}</Text>
         <Text style={[itemStyles.repeat, fonts.regular]}>
           {isAlarmOn ? 'On' : 'Off'} : {alarmName}
@@ -90,7 +128,7 @@ const AlarmItem = ({
       </View>
       <View style={itemStyles.toggleSwitch}>
         <ToggleSwitch isOn={isAlarmOn} onToggle={handleToggleSwitch}></ToggleSwitch>
-      </View>
+      </View> */}
     </View>
   );
 };

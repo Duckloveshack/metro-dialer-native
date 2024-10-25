@@ -1,8 +1,45 @@
-import React, { Component } from "react";
+import React, { Component, useContext } from "react";
 import { StyleSheet, View, Text, FlatList, Image } from "react-native";
 import sampleStoreData from "./Data.json";
+import { bottomBarContext } from "../components/core/MetroTabs";
+import { Voicemail, Book, Plus } from "react-native-feather";
 
-const TestScreen = () => {  
+const TestScreen = () => {
+  const setBottomBarElements = useContext(bottomBarContext);
+  setBottomBarElements({controls: [
+    {
+      text: "voicemail",
+      onPress: () => {console.log("voicemail")},
+      Icon: <Voicemail width={20} stroke={"white"} strokeWidth={3}/>
+    },
+    {
+      text: "keypad",
+      onPress: () => {console.log("keypad")},
+      Icon: <Voicemail width={20} stroke={"white"} strokeWidth={3}/>,
+      disabled: false
+    },
+    {
+      text: "phone book",
+      onPress: () => {console.log("phone book")},
+      Icon: <Book width={20} stroke={"white"} strokeWidth={3}/>
+    },
+    {
+      text: "add",
+      onPress: () => {console.log("search")},
+      Icon: <Plus width={20} stroke={"white"} strokeWidth={3}/>
+    }
+  ], options: [
+    {
+      text: "edit",
+      onPress: null,
+      disabled: true
+    },
+    {
+      text: "settings",
+      onPress: () => { console.log("settimgs") }
+    },
+  ]})
+
   return (
     <View style={styles.container}>
       <FlatList

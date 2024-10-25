@@ -22,18 +22,18 @@ const MainBottomBar = ({
       },
       {
         text: "phone book",
-        onPress: () => {console.log("voicemail")},
+        onPress: () => {console.log("phone book")},
         Icon: <Book width={20} stroke={"white"} strokeWidth={3}/>
       },
       {
         text: "search",
-        onPress: () => {console.log("voicemail")},
+        onPress: () => {console.log("search")},
         Icon: <Search width={20} stroke={"white"} strokeWidth={3}/>
       }
     ]} options={[
       {
         text: "settings",
-        onPress: null
+        onPress: () => { console.log("settimgs") }
       },
       {
         text: "delete all",
