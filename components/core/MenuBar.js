@@ -156,10 +156,10 @@ export const CombinedBar = ({ options, controls, height = 14, disabled = false, 
         <Animatable.View className={`bg-[#222222] w-full flex flex-col`}
         transition={["height"]}
         easing="ease-out-sine"
-        duration={250}
+        duration={options? 250: 150}
         style={{
           // if this looks ugly, its probable because of the hardcoded values
-          height: expanded ? 350 : 60,
+          height: expanded ? (options? 350: 80) : 60,
           marginBottom: 0,
           flexDirection: "column",
           backgroundColor: "#222",
@@ -170,7 +170,7 @@ export const CombinedBar = ({ options, controls, height = 14, disabled = false, 
         >
           <View style={{ width: "100%", flexDirection: "row", height: expanded? 80: 55, marginBottom: -10 }}>
             <View style={{ width: '15%' }} />
-            <Animatable.View easing={"ease-out-back"} duration={300} animation="fadeInUp" style={{ width: '70%', justifyContent: 'center', flexDirection: 'row'}}>
+            <Animatable.View style={{ width: '70%', justifyContent: 'center', flexDirection: 'row'}}>
               {controls?.map((control, index) => {
                 return (
                   <View
@@ -183,14 +183,15 @@ export const CombinedBar = ({ options, controls, height = 14, disabled = false, 
                       marginBottom: 12,
                       paddingHorizontal: 4
                     }}
-                    key={index}
+                    key={Math.random()}
                   >
-                    <RoundedButton Icon={control.Icon} action={control.onPress} disabled={disabled}/>
+                    <RoundedButton Icon={control.Icon} action={control.onPress} disabled={disabled} bounce={!expanded}/>
                     {expanded && (
                       <Animatable.View 
                         animation="fadeIn" 
                         duration={300} 
                         style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', marginTop: 4 }}
+                        key={Math.random()}
                       >
                       <Text style={[
                         { color: disabled ? '#8a8a8a' : 'white', fontSize: 10, position: "absolute" },
@@ -224,14 +225,13 @@ export const CombinedBar = ({ options, controls, height = 14, disabled = false, 
             <View className="flex flex-col align-left pl-4 py-4">
                 {options?.map((option, index) => {
                     return(
-                    <AnimatedView animation="fadeInUp" duration={500} delay={50*index}>
+                    <AnimatedView animation="fadeInUp" duration={500} delay={50*index} key={index}>
                         <Link
                             to={"https://google.com"}
                             classOverride="text-xl py-2"
                             text={option.text}
                             onPress={option.onPress}
                             disabled={option.disabled}
-                            key={index}
                         />
                     </AnimatedView>
                     );

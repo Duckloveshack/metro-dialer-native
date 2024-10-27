@@ -14,6 +14,7 @@ const AlarmMain = ({
 }) => {  
 
   const setBottomBarElements = useContext(bottomBarContext);
+  
   setBottomBarElements({controls: [
     {
       text: "voicemail",

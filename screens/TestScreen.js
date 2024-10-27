@@ -25,7 +25,7 @@ const TestScreen = () => {
     },
     {
       text: "add",
-      onPress: () => {console.log("search")},
+      onPress: () => {console.log("add")},
       Icon: <Plus width={20} stroke={"white"} strokeWidth={3}/>
     }
   ], options: [

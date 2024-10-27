@@ -1,9 +1,11 @@
-import React, { useState, Component, useEffect, useRef } from "react";
+import React, { useState, Component, useEffect, useRef, useContext } from "react";
 import { StyleSheet, View, Dimensions, Text } from "react-native";
 import { fonts } from "../styles/fonts";
 import Button from "../components/core/Button";
 import NewTimerBottomBar from "../components/compound/NewTimerBottomBar";
 import TimePicker from "../components/core/TimePicker";
+import { Plus } from "react-native-feather";
+import { bottomBarContext } from "../components/core/MetroTabs";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("screen");
 
@@ -11,7 +13,17 @@ const TimerMain = ({
   navigation,
   route,
   setTabIndex
-}) => {  
+}) => { 
+  
+  const setBottomBarElements = useContext(bottomBarContext);
+  
+  setBottomBarElements({controls: [
+    {
+      text: "add",
+      onPress: () => {navigation.navigate("TimerNew", {})},
+      Icon: <Plus width={20} stroke={"white"} strokeWidth={3}/>
+    }
+  ]})
   
   const [selectedHour, setSelectedHour] = useState(0);
   const [selectedMinute, setSelectedMinute] = useState(0);

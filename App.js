@@ -11,6 +11,8 @@ import TimerNew from './screens/TimerNew';
 import { MenuBar } from './components/core/MenuBar';
 import MainBottomBar from './components/compound/MainBottomBar';
 import { Voicemail, Search, Book, Plus } from "react-native-feather";
+import { useState } from 'react';
+import SimCardsManagerModule from "react-native-sim-cards-manager";
 
 const Stack = createNativeStackNavigator();
 
@@ -51,14 +53,23 @@ export default function App() {
 // Comps that don't need MetroTab, can be navigated to using navigation.navigate. Just 
 // add them to Stack.screen above.
 const PhoneMain = ({navigation, route}) => {
+  const [carrier, setCarrier] = useState("No SIM installed");
+
+  // SimCardsManagerModule.getSimCardsNative()
+  //   .then((array) => {
+  //     console.log(array)
+  //   })
+
   return (
     <View style={{backgroundColor: "black", }}>
-      <AppTitle title={"Fake GSM Network"}></AppTitle>
+
+      <AppTitle title={carrier}></AppTitle>
       <MetroTabs
         rightOverlapWidth={0}
         screens={[
           { key: "0", title: "speed dial", screen: <AlarmMain navigation={navigation} route={route}/> },
-          { key: "1", title: "history", screen: <TestScreen navigation={navigation} route={route}/> }
+          { key: "1", title: "history", screen: <TestScreen navigation={navigation} route={route}/> },
+          { key: "2", title: "test", screen: <TimerMain navigation={navigation} route={route}/> }
         ]}
         bottomBar
       />

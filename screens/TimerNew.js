@@ -83,7 +83,7 @@ const TimerNew = ({
               // Return selected values to ClockMain, which will further pass them to TimerMain
               // Directly navigating to TimerMain will drop the MetroTab lol
               navigation.navigate({
-                name: "ClockMain", 
+                name: "PhoneMain", 
                 params: {
                   timer: {
                     selectedHour: hour,

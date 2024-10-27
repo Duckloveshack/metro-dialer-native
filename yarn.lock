@@ -6262,6 +6262,11 @@ react-native-gesture-handler@^2.14.1:
     lodash "^4.17.21"
     prop-types "^15.7.2"
 
+react-native-reanimated-carousel@^3.5.1:
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/react-native-reanimated-carousel/-/react-native-reanimated-carousel-3.5.1.tgz#3605b9959ffc0aa1c6b8b8736d98f91f46e36b17"
+  integrity sha512-9BBQV6JAYSQm2lV7MFtT4mzapXmW4IZO6s38gfiJL84Jg23ivGB1UykcNQauKgtHyhtW2NuZJzItb1s42lM+hA==
+
 react-native-reanimated@^3.6.2:
   version "3.6.2"
   resolved "https://registry.npmjs.org/react-native-reanimated/-/react-native-reanimated-3.6.2.tgz"
@@ -6300,6 +6305,11 @@ react-native-screens@^3.29.0:
   dependencies:
     react-freeze "^1.0.0"
     warn-once "^0.1.0"
+
+react-native-sim-cards-manager@^1.0.24:
+  version "1.0.24"
+  resolved "https://registry.yarnpkg.com/react-native-sim-cards-manager/-/react-native-sim-cards-manager-1.0.24.tgz#6e1194908e015ec8670d04239204b17cdc816acd"
+  integrity sha512-Rt84Tej/zrhc4gs5ICO4+DrsXsPmtSAvR7u2f0otdbyKpRXECCQKB7jo9L36ZUz1gww54GUmFZWEisKrL8ek5w==
 
 react-native-svg@^14.1.0:
   version "14.1.0"
