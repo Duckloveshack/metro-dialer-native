@@ -11,7 +11,6 @@ import { View, StyleSheet, Dimensions, TouchableOpacity, TouchableWithoutFeedbac
 import { fonts } from "../../styles/fonts";
 import { CombinedBar } from "./MenuBar";
 import Carousel from "react-native-reanimated-carousel"
- 
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("screen");
 
@@ -39,10 +38,8 @@ const MetroTabs = ({
   const [expanded, setExpanded] = useState(false)
 
   const SCREEN_SNAP_INTERVAL = SCREEN_WIDTH - rightOverlapWidth;
-  // console.log(screens);
   const screenCnt = screens.length;
 
-  const animatedRef = useAnimatedRef();
   const ref = useRef();
   // main animated node
   // everything else is interpolated on this node
@@ -71,10 +68,20 @@ const MetroTabs = ({
 
   // scrolls to the correct screen when one of the tabs are pressed
   const onTabPress = useCallback(async (index) => {
-    // animatedRef.current
-    //   ?.scrollToIndex({ animatedRef: animatedRef, index: index, animated: true });
     ref.current?.scrollTo({index: index, animated: true})
   }, []);
+
+  const changeBottomBar = (data) => {
+    setBottomBarElements({
+      controls: data?.controls,
+      options: data?.options,
+      //oldControls: getBottomBarElements()
+    })
+  }
+
+  const getBottomBarElements = () => {
+    return bottomBarElements?.controls;
+  }
 
   // Get total header width so we can apply parallax accordingly
   const onHeaderLayout = useCallback(async (index, event) => {
@@ -100,36 +107,13 @@ const MetroTabs = ({
       </bottomBarContext.Provider>)
     }
 
-    const onViewableItemsChanged = async ({viewableItems, index}) => {
-      if (viewableItems.length !=0) {
-        setTabIndex(viewableItems[0].index)
-      } else {
-        setBottomBarElements({})
-      }
-      //setBottomBarElements(viewableItems[0]?.item.bottomBarElements)
-    }
-
-  let canChangeBar=true
-
   const onProgressChange = (offsetProgress, absoluteProgress) => {
     if (Math.round(absoluteProgress) >= screens.length) absoluteProgress=absoluteProgress-screens.length;
     scrollViewX.value = absoluteProgress*SCREEN_WIDTH;
-    if (Math.abs(0.25-absoluteProgress%0.5) < 0.15) {
-      canChangeBar=true;
-      return;
-    }
-    if (tabIndex != Math.round(absoluteProgress) && canChangeBar) {
-      canChangeBar = false;
+    if (tabIndex != Math.round(absoluteProgress)) {
       setTabIndex(Math.round(absoluteProgress))
     }
   }
-
-  const onSnapToItem = (index) => {
-    console.log(index)
-    //setTabIndex(index)
-  }
-
-  console.log(SCREEN_SNAP_INTERVAL, scrollViewX.value)
 
   return (
     <View style={[
@@ -146,18 +130,7 @@ const MetroTabs = ({
           {width: SCREEN_WIDTH*screenCnt}
         ]}
       >
-          {/* <HeaderItem
-            key={screens.length-1}
-            item={screens[screens.length-1]}
-            index={screens.length-1}
-            onPress={onTabPress}
-            maxLen={screens.length}
-            scrollViewX={scrollViewX}
-            onLayout={(event) => onHeaderLayout(screens.length-1, event)}
-            screenSnapInterval={SCREEN_SNAP_INTERVAL}
-          /> */}
         {screens.map((item, index) => (
-          
           <HeaderItem
             key={index}
             item={item}
@@ -190,53 +163,22 @@ const MetroTabs = ({
             screenSnapInterval={SCREEN_SNAP_INTERVAL}
           />
       </Animated.View>
-
-      <bottomBarContext.Provider value={setBottomBarElements}>
-      {/* <Animated.FlatList
-        horizontal
-        bounces={true}
-        ref={animatedRef}
-        onScroll={scrollHandler}
-        scrollEventThrottle={16}
-        pagingEnabled={true}
-        snapToAlignment={'start'}
-        decelerationRate={0.825}
-        overScrollMode={'never'}
-        snapToInterval={SCREEN_SNAP_INTERVAL}
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.screenList}
-        disableIntervalMomentum={true}
-
-        viewabilityConfig={{itemVisiblePercentThreshold: 60}}
-        onViewableItemsChanged={onViewableItemsChanged}
-        
-        data={screens}
-        renderItem={listItem}
-      /> */}
       <Carousel
         loop
-        width={SCREEN_WIDTH}
+        width={SCREEN_WIDTH*2}
         height={SCREEN_HEIGHT-175}
-        //onSnapToItem={onViewableItemsChanged}
         onProgressChange={onProgressChange}
-        onScrollEnd={onSnapToItem}
         pagingEnabled={true}
         ref={ref}
-        //ref={animatedRef}
-        //onProgressChange={scrollHandler}
+        
         
         data={screens}
         renderItem={listItem}
-
       />
 
-      </bottomBarContext.Provider>
       </View>
-      {/* <View ref={bottomRef}>
-        {bottomBar}
-      </View> */}
       {bottomBar && (
-        <CombinedBar expanded = {expanded} setExpanded={setExpanded} {...bottomBarElements}/>
+        <CombinedBar expanded = {expanded} setExpanded={setExpanded} scrolled={scrollViewX.value%SCREEN_SNAP_INTERVAL == 0} {...bottomBarElements}/>
       )}
     </View>
   );

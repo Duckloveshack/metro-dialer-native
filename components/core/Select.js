@@ -1,8 +1,9 @@
 import { Text, TouchableWithoutFeedback, View } from "react-native";
 import { fonts } from "../../styles/fonts";
 import { useState } from "react";
+import * as Animatable from "react-native-animatable"
 
-export const Select = ({ options, onChange, title, classOverride = "" }) => {
+export const Select = ({ options, onChange, title, classOverride = "", toggleOnColor="#a013ec" }) => {
     const [selected, setSelected] = useState(options[0]);
     const [expanded, setExpanded] = useState(false);
     return (
@@ -10,35 +11,38 @@ export const Select = ({ options, onChange, title, classOverride = "" }) => {
             <Text className="text-[#b0b0b0] text-base mb-1" style={fonts.light}>
                 {title}
             </Text>
-            {expanded ? (
-                <View className="bg-white mt-2 w-full py-2 pr-4 pl-6 text-base border-[#a013ec] border-2 border-solid justify-center item-center">
-                    {options.map((option, index) => {
-                        return (
-                            <TouchableWithoutFeedback onPress={() => {
+            <Animatable.View transition={["height"]} duration={150} className="mt-2 w-full pr-4 pl-6 py-2 text-base border-2 border-solid justify-center item-center overflow-hidden" style={
+                expanded? {
+                    backgroundColor: "white",
+                    borderColor: toggleOnColor,
+                    height: 45*(options.length)
+                }: {
+                    height: 45,
+                    borderColor: "white"
+                }
+                }>
+                {options.map((option, index) => {
+                    return (
+                        <TouchableWithoutFeedback onPress={() => {
+                            if (expanded) {
                                 setSelected(option);
                                 onChange(option);
-                                setExpanded(false);
+                                setExpanded(false)
+                            } else {
+                                setExpanded(true)
+                            }
+                        }}>
+                            <View style={(!expanded && option.value!==selected.value) && {
+                                height: 0
                             }}>
-                                <View className={`flex flex-row items-center justify-between py-1`}>
-                                    <Text className={`text-base ${selected.value === option.value ? "text-[#a013ec]" : "text-black"}`} style={fonts.regular}>
-                                        {option.name}
-                                    </Text>
-                                </View>
-                            </TouchableWithoutFeedback>
-                        )
-                    })} 
-                </View>
-            ) : (
-                <View className="mt-2 w-full pr-4 pl-6 py-2 text-base border-white border-2 border-solid justify-center item-center">
-                    <TouchableWithoutFeedback onPress={() => setExpanded(true)}>
-                        <View className="flex flex-row items-center">
-                            <Text className="text-white text-base" style={fonts.regular}>
-                                {selected.name}
-                            </Text>
-                        </View>
-                    </TouchableWithoutFeedback>
-                </View>
-            )}
+                                <Text className={`${expanded && "py-2"} -ml-3 text-base ${selected.value === option.value? (expanded? "text-[" + toggleOnColor + "]": "text-white") : "text-black"}`} style={fonts.regular}>
+                                    {option.name}
+                                </Text>
+                            </View>
+                        </TouchableWithoutFeedback>
+                    )
+                })}
+            </Animatable.View>
         </View>
     )
 };

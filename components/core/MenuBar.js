@@ -24,9 +24,6 @@ const ShortMenu = ({ children, handleExpand }) => {
 
 export const MenuBar = ({ options, controls, height = 14 }) => {
     const [expanded, setExpanded] = useState(false);
-    const what = () => {
-      console.log("test")
-    }
     
     return <Animatable.View
       transition={["height"]}
@@ -149,13 +146,15 @@ export const MenuBar = ({ options, controls, height = 14 }) => {
     );
   };
 
-export const CombinedBar = ({ options, controls, height = 14, disabled = false, barExpanded = false, expanded, setExpanded }) => {
+export const CombinedBar = ({ options, controls, oldControls, height = 14, disabled = false, barExpanded = false, expanded=false, setExpanded, scrolled=false, disappear=false}) => {
     const AnimatedView = Animatable.createAnimatableComponent(View);
+
+    //console.log(oldControls)
 
     return (
         <Animatable.View className={`bg-[#222222] w-full flex flex-col`}
         transition={["height"]}
-        easing="ease-out-sine"
+        easing="ease-out-quart"
         duration={options? 250: 150}
         style={{
           // if this looks ugly, its probable because of the hardcoded values
@@ -171,6 +170,24 @@ export const CombinedBar = ({ options, controls, height = 14, disabled = false, 
           <View style={{ width: "100%", flexDirection: "row", height: expanded? 80: 55, marginBottom: -10 }}>
             <View style={{ width: '15%' }} />
             <Animatable.View style={{ width: '70%', justifyContent: 'center', flexDirection: 'row'}}>
+              {oldControls?.map((control, index) => {
+                console.log(control)
+                return (
+                  <View
+                  style={{
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginHorizontal: 16,
+                    marginVertical: 8,
+                    marginBottom: 12,
+                    paddingHorizontal: 4
+                  }}
+                  key={Math.random()}>
+                    <RoundedButton Icon={control.Icon} action={control.onPress} disabled={disabled} bounce={!expanded && !scrolled} disappear={true}/>
+                  </View>
+                )
+              })}
               {controls?.map((control, index) => {
                 return (
                   <View
@@ -185,10 +202,10 @@ export const CombinedBar = ({ options, controls, height = 14, disabled = false, 
                     }}
                     key={Math.random()}
                   >
-                    <RoundedButton Icon={control.Icon} action={control.onPress} disabled={disabled} bounce={!expanded}/>
+                    <RoundedButton Icon={control.Icon} action={control.onPress} disabled={disabled} bounce={!expanded && !scrolled} disappear={false}/>
                     {expanded && (
                       <Animatable.View 
-                        animation="fadeIn" 
+                        animation={"fadeIn"} 
                         duration={300} 
                         style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', marginTop: 4 }}
                         key={Math.random()}
@@ -230,7 +247,12 @@ export const CombinedBar = ({ options, controls, height = 14, disabled = false, 
                             to={"https://google.com"}
                             classOverride="text-xl py-2"
                             text={option.text}
-                            onPress={option.onPress}
+                            onPress={() => {
+                              if (option.onPress) {
+                                option.onPress()
+                                setTimeout(() => {setExpanded(false)}, 250)
+                              }
+                            }}
                             disabled={option.disabled}
                         />
                     </AnimatedView>

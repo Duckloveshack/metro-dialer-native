@@ -19,8 +19,8 @@ const ToggleSwitch = ({
   onToggle,
   isOn = false,
   toggleOffColor = 'black',
-  toggleOnColor = 'orange',
-  knobColor = '#c0c0c0ff',
+  toggleOnColor = "#a013ec",
+  knobColor = 'white',
   outerBorderColor = 'white',
   innerBorderColor = 'black',
   height = 25,
@@ -69,7 +69,7 @@ const ToggleSwitch = ({
 
   const animateSharedValue = (toValue) => {
     sharedValue.value = withTiming(toValue, {
-      duration: 300,
+      duration: 150,
       easing: Easing.bezier(0.4, 0.0, 0.2, 1),
     });
   }
