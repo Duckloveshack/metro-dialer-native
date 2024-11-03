@@ -4,6 +4,7 @@ import { bottomBarContext } from "../components/core/MetroTabs";
 import { Voicemail, Book, Search, User } from "react-native-feather";
 import { fonts } from "../styles/fonts";
 import RoundedButton from "../components/core/RoundedButton";
+import ContextMenuView from "../components/core/ContextMenuView";
 
 const HistoryScreen = ({navigation, route}) => {
   const setBottomBarElements = useContext(bottomBarContext);
@@ -44,7 +45,23 @@ const HistoryScreen = ({navigation, route}) => {
   return (
     <View style={styles.container}>
         <Text style={[styles.placeholder, fonts.light]}>Calls you make or receive will appear here. Tap the keypad icon to call someone.</Text>
-        <View style={styles.itemContainer}>
+        <ContextMenuView
+          style={styles.itemContainer}
+          options={[
+            {
+              label: "delete"
+            },
+            {
+              label: "delete"
+            },
+            {
+              label: "delete"
+            }, 
+            {
+              label: "delete"
+            }
+          ]}
+        >
           <View style={itemStyles.infoContainer}>
             <Text style={[itemStyles.number, fonts.light]}>
               +1 (425) 001-0001
@@ -56,8 +73,24 @@ const HistoryScreen = ({navigation, route}) => {
           <View style={itemStyles.button}>
             <RoundedButton Icon={<User width={20} stroke={"white"} strokeWidth={3}/>} action={() => {}}/>
           </View>
-        </View>
-        <View style={styles.itemContainer}>
+        </ContextMenuView>
+        <ContextMenuView
+          style={styles.itemContainer}
+          options={[
+            {
+              label: "delete"
+            },
+            {
+              label: "delete"
+            },
+            {
+              label: "delete"
+            }, 
+            {
+              label: "delete"
+            }
+          ]}
+        >
           <View style={itemStyles.infoContainer}>
             <Text style={[itemStyles.number, fonts.light]}>
               +1 (425) 001-0001
@@ -69,27 +102,13 @@ const HistoryScreen = ({navigation, route}) => {
           <View style={itemStyles.button}>
             <RoundedButton Icon={<User width={20} stroke={"white"} strokeWidth={3}/>} action={() => {}}/>
           </View>
-        </View>
-        <View style={styles.itemContainer}>
-          <View style={itemStyles.infoContainer}>
-            <Text style={[itemStyles.number, fonts.light]}>
-              +1 (425) 001-0001
-            </Text>
-            <Text style={[itemStyles.details, fonts.light]}>
-              Outgoing, Thu 7:18p
-            </Text>
-          </View>
-          <View style={itemStyles.button}>
-            <RoundedButton Icon={<User width={20} stroke={"white"} strokeWidth={3}/>} action={() => {}}/>
-          </View>
-        </View>
+        </ContextMenuView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
     container: {
-      flex: 1,
       backgroundColor: "black",
     },
     list: {

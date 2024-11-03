@@ -172,6 +172,7 @@ const MetroTabs = ({
         ref={ref}
         
         
+        
         data={screens}
         renderItem={listItem}
       />
