@@ -15,9 +15,9 @@ const SettingsMain = ({ navigation }) => {
             <View style={styles.screenContainer}>
                 <PageTitle title="phone"/>
                 <ScrollView overScrollMode="always" contentContainerStyle={styles.tabContainer}>
-                    <SettingsText classOverride={"mb-4"} title="My phone number">+1 (425) 001-0001</SettingsText>
-                    <SettingsSwitch classOverride={"mb-4"} isOn={true} title="Use default voicemail number"/>
-                    <Select classOverride={"mb-4"} title="Show my caller ID to" options={[
+                    <SettingsText key={0} classOverride={"mb-4"} title="My phone number">+1 (425) 001-0001</SettingsText>
+                    <SettingsSwitch key={1} classOverride={"mb-4"} isOn={true} title="Use default voicemail number"/>
+                    <Select key={2} classOverride={"mb-4"} title="Show my caller ID to" options={[
                         { name: "everyone", value: "all" },
                         { name: "no one", value: "none" },
                         { name: "my contacts", value: "contacts" }

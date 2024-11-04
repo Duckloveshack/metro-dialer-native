@@ -4,7 +4,7 @@ import { bottomBarContext } from "../components/core/MetroTabs";
 import { Voicemail, Book, Search, User } from "react-native-feather";
 import { fonts } from "../styles/fonts";
 import RoundedButton from "../components/core/RoundedButton";
-import ContextMenuView from "../components/core/ContextMenuView";
+import ContextFlatList from "../components/core/ContextFlatList";
 
 const HistoryScreen = ({navigation, route}) => {
   const setBottomBarElements = useContext(bottomBarContext);
@@ -40,69 +40,77 @@ const HistoryScreen = ({navigation, route}) => {
       onPress: null,
       disabled: true
     },
-  ]})
+  ]});
+
+  const historyItem = ({item, index}) => {
+    return(
+      <View style={styles.itemContainer}>
+        <View style={itemStyles.infoContainer}>
+          <Text style={[itemStyles.number, fonts.light]}>
+            {item.number}
+          </Text>
+          <Text style={[itemStyles.details, fonts.light]}>
+            Outgoing, Thu 7:18p
+          </Text>
+        </View>
+        <View style={itemStyles.button}>
+            <RoundedButton Icon={<User width={20} stroke={"white"} strokeWidth={3}/>} action={() => {}}/>
+          </View>
+      </View>
+    );
+  }
+
+  const sampleData = [
+    {
+      number: "+1 (425) 001-0001",
+      context_options: [
+        {
+          label: "delete"
+        },
+        {
+          label: "delete"
+        },
+        {
+          label: "delete"
+        }
+      ]
+    },
+    {
+      number: "+1 (425) 001-0001",
+      context_options: [
+        {
+          label: "delete"
+        }
+      ]
+    },
+    {
+      number: "+1 (425) 001-0001",
+      context_options: [
+        {
+          label: "delete"
+        }
+      ]
+    },
+    {
+      number: "+1 (425) 001-0001",
+      context_options: [
+        {
+          label: "delete"
+        },
+      ]
+    }
+  ]
 
   return (
     <View style={styles.container}>
-        <Text style={[styles.placeholder, fonts.light]}>Calls you make or receive will appear here. Tap the keypad icon to call someone.</Text>
-        <ContextMenuView
-          style={styles.itemContainer}
-          options={[
-            {
-              label: "delete"
-            },
-            {
-              label: "delete"
-            },
-            {
-              label: "delete"
-            }, 
-            {
-              label: "delete"
-            }
-          ]}
-        >
-          <View style={itemStyles.infoContainer}>
-            <Text style={[itemStyles.number, fonts.light]}>
-              +1 (425) 001-0001
-            </Text>
-            <Text style={[itemStyles.details, fonts.light]}>
-              Outgoing, Thu 7:18p
-            </Text>
-          </View>
-          <View style={itemStyles.button}>
-            <RoundedButton Icon={<User width={20} stroke={"white"} strokeWidth={3}/>} action={() => {}}/>
-          </View>
-        </ContextMenuView>
-        <ContextMenuView
-          style={styles.itemContainer}
-          options={[
-            {
-              label: "delete"
-            },
-            {
-              label: "delete"
-            },
-            {
-              label: "delete"
-            }, 
-            {
-              label: "delete"
-            }
-          ]}
-        >
-          <View style={itemStyles.infoContainer}>
-            <Text style={[itemStyles.number, fonts.light]}>
-              +1 (425) 001-0001
-            </Text>
-            <Text style={[itemStyles.details, fonts.light]}>
-              Outgoing, Thu 7:18p
-            </Text>
-          </View>
-          <View style={itemStyles.button}>
-            <RoundedButton Icon={<User width={20} stroke={"white"} strokeWidth={3}/>} action={() => {}}/>
-          </View>
-        </ContextMenuView>
+        {sampleData? (        
+          <ContextFlatList
+            data={sampleData}
+            renderItem={historyItem}
+          />
+        ) : (
+          <Text style={[styles.placeholder, fonts.light]}>Calls you make or receive will appear here. Tap the keypad icon to call someone.</Text>
+        )}
     </View>
   );
 };
@@ -110,6 +118,7 @@ const HistoryScreen = ({navigation, route}) => {
 const styles = StyleSheet.create({
     container: {
       backgroundColor: "black",
+      paddingTop: 10
     },
     list: {
       paddingBottom: 30,
