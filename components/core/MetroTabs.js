@@ -117,7 +117,7 @@ const MetroTabs = ({
 
   return (
     <View style={[
-      styles.container
+      styles.container,
     ]}>
       <View onStartShouldSetResponder={(e) => {
         if (expanded) setExpanded(false)
@@ -226,6 +226,7 @@ const styles = StyleSheet.create({
   container: {
     paddingTop: 0, //120
     backgroundColor: "black",
+    height: SCREEN_HEIGHT
   },
   screenContainer: {
     height: SCREEN_HEIGHT - 170, // account for container padding top (120 original)

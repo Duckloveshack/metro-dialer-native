@@ -1,11 +1,9 @@
 import { useState, useRef } from "react";
-import { ScrollView, Text, TouchableWithoutFeedback, View, Animated, Easing } from "react-native";
+import { ScrollView, Text, TouchableWithoutFeedback, View, Animated, Dimensions } from "react-native";
 import RoundedButton from "./RoundedButton";
 import { fonts } from "../../styles/fonts";
 import * as Animatable from "react-native-animatable"
 import Link from "../core/Link";
-import { red } from "react-native-redash";
-import { FadeInUp } from "react-native-reanimated";
 
 const ShortMenu = ({ children, handleExpand }) => {
     return (
@@ -55,14 +53,6 @@ export const MenuBar = ({ options, controls, height = 14 }) => {
         <ShortMenu handleExpand={() => setExpanded(true)}>{controls}</ShortMenu>
       )}
     </Animatable.View>;
-    // if (!expanded) {
-    //   return (
-    //   );
-    // } else {
-    //   return (
-  
-    //   );
-    // }
   };
 
 
@@ -163,7 +153,7 @@ export const CombinedBar = ({ options, controls, oldControls, height = 14, disab
           flexDirection: "column",
           backgroundColor: "#222",
           position: "absolute",
-          bottom: 0,
+          bottom: 90,
           width: "100%",
           }}
         >

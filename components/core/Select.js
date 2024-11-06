@@ -35,7 +35,9 @@ export const Select = ({ options, onChange, title, classOverride = "", toggleOnC
                             <View style={(!expanded && option.value!==selected.value) && {
                                 height: 0
                             }}>
-                                <Text className={`${expanded && "py-2"} -ml-3 text-base ${selected.value === option.value? (expanded? "text-[" + toggleOnColor + "]": "text-white") : "text-black"}`} style={fonts.regular}>
+                                <Text className={`${expanded && "py-2"} -ml-3 text-base}`} style={[fonts.regular, {
+                                    color: expanded? (option.value===selected.value? toggleOnColor: "black"): "white"
+                                }]}>
                                     {option.name}
                                 </Text>
                             </View>
