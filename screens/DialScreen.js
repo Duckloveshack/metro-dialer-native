@@ -1,9 +1,10 @@
-import { View , StyleSheet, Text, Dimensions } from "react-native"
+import { View , StyleSheet, Text, Dimensions, TouchableWithoutFeedback, Linking } from "react-native"
 import { AppTitle } from "../components/core/AppTitle"
 import { FlatList } from "react-native-gesture-handler";
 import { fonts } from "../styles/fonts";
 import { Delete, Save } from "react-native-feather";
 import MetroTouchable from "../components/core/MetroTouchable";
+import { useState } from "react";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -46,19 +47,63 @@ const buttonData=[
     }
 ]
 
+const ButtonItem = ({
+    disabled=false,
+    style,
+    children,
+    ...props
+}) => {
+    const [held, setHeld] = useState(false);
+
+    const onPressIn = (e) => {
+        setHeld(true);
+    }
+
+    const onPressOut = (e) => {
+        setHeld(false);
+    }
+
+    return (
+        <MetroTouchable
+            onPressIn={onPressIn}
+            onPressOut={onPressOut}
+            style={[{
+                backgroundColor: !disabled && held? "#a013ec": "#383838",
+            }, style]}
+            transformStyle={[
+                {
+                    scale: held? 0.95: 1
+                },
+                {
+                    translateY: held? -2: 0
+                }
+            ]}
+            yOffset={600}
+        >
+            {children}
+        </MetroTouchable>
+    )
+}
+
 const DialScreen = ({ navigation, route }) => {
-    const buttonItem = ({item, index}) => {
+    const [number, setNumber] = useState("");
+
+    const numButtonItem = ({item, index}) => {
         return(
-            <MetroTouchable style={itemStyle.numButton} yOffset={600}>
-                <View style={itemStyle.numButton}>
-                    <Text style={[fonts.light, itemStyle.buttonLeadText]}>
-                        {item.index}
-                    </Text>
-                    <Text style={[fonts.regular, itemStyle.buttonSubText]}>
-                        {item.letters}
-                    </Text>
-                </View>
-            </MetroTouchable>
+            <ButtonItem style={itemStyle.numButton}>
+                <TouchableWithoutFeedback
+                    onPress={ () => { setNumber(number.concat(item.index)) } }
+                >
+                    <View style={itemStyle.numButton}>
+                        <Text style={[fonts.light, itemStyle.buttonLeadText]}>
+                            {item.index}
+                        </Text>
+                        <Text style={[fonts.regular, itemStyle.buttonSubText]}>
+                            {item.letters}
+                        </Text>
+                    </View>
+                </TouchableWithoutFeedback>
+            </ButtonItem>
         )
     }
 
@@ -67,14 +112,33 @@ const DialScreen = ({ navigation, route }) => {
             <AppTitle title="Fake GSM Network"/>
             <View style={styles.screenContainer}>
                 <View style={styles.dialContainer}>
-                    <Text style={[fonts.light, {fontSize: 45}]} className={"text-white mr-auto"}>(123) 456-7890</Text>
-                    <Delete width={40} height={40} stroke={"white"} strokeWidth={1} className={"mt-3"}/>
+                    <Text 
+                        numberOfLines={1}
+                        ellipsizeMode="head"
+                        style={[fonts.light, {
+                            fontSize: 45,
+                            marginRight: 45
+                        }]}
+                        className={"text-white mr-auto"}
+                    >
+                        {number}
+                    </Text>
+                    <TouchableWithoutFeedback
+                        onPress={ () => { if (number.length > 0) setNumber(number.slice(0, -1)) } }
+                    >
+                        <Delete width={40} height={40} stroke={"white"} strokeWidth={1} className={"mt-3"}
+                            style={{
+                                display: number.length!=0? "flex": "none",
+                                marginLeft: "auto"
+                            }}
+                        />
+                    </TouchableWithoutFeedback>
                 </View>
                 <View style={styles.padContainer}>
                     <FlatList
                         numColumns={3}
                         data={buttonData}
-                        renderItem={buttonItem}
+                        renderItem={numButtonItem}
                         contentContainerStyle={{
                             gap: 3,
                         }}
@@ -84,41 +148,65 @@ const DialScreen = ({ navigation, route }) => {
                         scrollEnabled={false}
                     />
                     <View style={itemStyle.buttonRow}>
-                        <MetroTouchable style={itemStyle.numButton} yOffset={600}>
-                            <View style={itemStyle.numButton}>
-                                <Text style={[fonts.light, itemStyle.charText, {fontSize: 50, marginTop: 12}]}>
-                                    *
-                                </Text>
-                            </View>
-                        </MetroTouchable>
-                        {buttonItem({item: {
+                        <ButtonItem style={itemStyle.numButton}>
+                            <TouchableWithoutFeedback
+                                onPress={ () => { setNumber(number.concat("*")) } }
+                            >
+                                <View style={itemStyle.numButton}>
+                                    <Text style={[fonts.light, itemStyle.charText, {fontSize: 50, marginTop: 12}]}>
+                                        *
+                                    </Text>
+                                </View>
+                            </TouchableWithoutFeedback>
+                        </ButtonItem>
+                        {numButtonItem({item: {
                             index: 0,
                             letters: "+"
                         }})}
-                        <MetroTouchable style={itemStyle.numButton} yOffset={600}>
-                            <View style={itemStyle.numButton}>
-                                <Text style={[fonts.light, itemStyle.charText]}>
-                                    #
-                                </Text>
-                            </View>
-                        </MetroTouchable>
+                        <ButtonItem style={itemStyle.numButton}>
+                            <TouchableWithoutFeedback
+                                onPress={ () => { setNumber(number.concat("#")) } }
+                            >
+                                <View style={itemStyle.numButton}>
+                                    <Text style={[fonts.light, itemStyle.charText]}>
+                                        #
+                                    </Text>
+                                </View>
+                            </TouchableWithoutFeedback>
+                        </ButtonItem>
                     </View>
                     <View style={itemStyle.buttonRow}>
-                        <MetroTouchable style={itemStyle.callButton} yOffset={600}>
-                            <View style={itemStyle.callButton}>
-                                <Text style={[fonts.regular, itemStyle.callButtonText]}>
-                                    call
-                                </Text>
-                            </View>
-                        </MetroTouchable>
-                        <MetroTouchable style={itemStyle.saveButton} yOffset={600}>
+                        <ButtonItem disabled={ number.length==0 } style={itemStyle.callButton}>
+                            <TouchableWithoutFeedback
+                                onPress={() => {
+                                    if (number.length != 0) {
+                                        Linking.openURL(`tel:${number}`);
+                                    }
+                                }}
+                            >
+                                <View style={itemStyle.callButton}>
+                                    <Text style={[fonts.regular, itemStyle.callButtonText, {
+                                        color: number.length != 0? "white": "#ffffff7f"
+                                    }]}>
+                                        call
+                                    </Text>
+                                </View>
+                            </TouchableWithoutFeedback>
+                        </ButtonItem>
+                        <ButtonItem disabled={ number.length==0 } style={itemStyle.saveButton}>
                             <View style={itemStyle.saveButton}>
-                                <Save width={20} stroke={"gray"} strokeWidth={2} className="ml-auto mr-auto mt-auto"/>
-                                <Text style={fonts.regular} className="text-lg text-[#7f7f7f] text-center mb-auto">
+                                <Save width={20} stroke={number.length!=0? "white": "#ffffff7f"} strokeWidth={2} className="ml-auto mr-auto mt-auto"/>
+                                <Text
+                                    style={[
+                                        fonts.regular,
+                                        { color: number.length != 0? "white": "#ffffff7f" }
+                                    ]}
+                                    className="text-lg text-white text-center mb-auto"
+                                >
                                     save
                                 </Text>
                             </View>
-                        </MetroTouchable>
+                        </ButtonItem>
                     </View>
                 </View>
             </View>
@@ -155,7 +243,6 @@ const styles = StyleSheet.create({
 
 const itemStyle = StyleSheet.create({
     numButton: {
-        backgroundColor: "#383838",
         flex: 1,
         flexDirection: "row",
         aspectRatio: 8/5
@@ -170,7 +257,7 @@ const itemStyle = StyleSheet.create({
     },
     buttonSubText: {
         flex: 1,
-        color: "gray",
+        color: "#ffffff7f",
         verticalAlign: "middle"
     },
     charText: {
@@ -181,12 +268,11 @@ const itemStyle = StyleSheet.create({
         verticalAlign: "middle"
     },
     callButton: {
-        backgroundColor: "#383838",
         flex: 2.03,
         verticalAlign: "middle"
     },
     callButtonText: {
-        color: "gray",
+        color: "white",
         fontSize: 20,
         textAlign: "center",
         marginTop: "auto",
@@ -198,7 +284,6 @@ const itemStyle = StyleSheet.create({
         gap: 3
     },
     saveButton: {
-        backgroundColor: "#383838",
         flex: 1,
         flexDirection: "column",
         aspectRatio: 8/5,

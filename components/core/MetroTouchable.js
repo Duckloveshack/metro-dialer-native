@@ -6,11 +6,12 @@ const { View, TouchableWithoutFeedback } = require("react-native")
 
 const MetroTouchable = ({
     children,
-    onPress,
+    onPressIn, onPressOut,
     style,
     disabled=false,
     xOffset=0, yOffset=0,
     intensityX=20, intensityY=20,
+    transformStyle,
     ...props
 }) => {
     
@@ -36,6 +37,7 @@ const MetroTouchable = ({
     }
 
     const onTouchStart = (e) => {
+        if (onPressIn) onPressIn(e);
         onTouchMove(e);
     }
 
@@ -54,19 +56,36 @@ const MetroTouchable = ({
     const onTouchEnd = (e) => {
         rotateX.value = 0;
         rotateY.value = 0;
+
+        if (onPressOut) onPressOut(e)
     }
 
     const touchedStyle = useAnimatedStyle(() => {
-        return {
-            transform: [
-                {
-                    rotateX: `${rotateX.value}deg`
-                },
-                {
-                    rotateY: `${rotateY.value}deg`
-                }
-            ]
+        if (transformStyle) {
+            return {
+                transform: [
+                    ...transformStyle,
+                    {
+                        rotateX: `${rotateX.value}deg`
+                    },
+                    {
+                        rotateY: `${rotateY.value}deg`
+                    }
+                ]
+            }
+        } else {
+            return {
+                transform: [
+                    {
+                        rotateX: `${rotateX.value}deg`
+                    },
+                    {
+                        rotateY: `${rotateY.value}deg`
+                    }
+                ]
+            }
         }
+
     })
 
     return(
@@ -80,9 +99,9 @@ const MetroTouchable = ({
 
             style={[touchedStyle, style]}
         >
-            <TouchableWithoutFeedback onPress={onPress}>
+            {/* <TouchableWithoutFeedback onPress={onPress}> */}
                 {children}
-            </TouchableWithoutFeedback>
+            {/* </TouchableWithoutFeedback> */}
         </Animated.View>
     )
 }

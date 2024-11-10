@@ -4,6 +4,7 @@ import { fonts } from "../../styles/fonts"
 import { useState, useRef, useEffect, createContext, useContext } from "react"
 import { useSharedValue } from "react-native-reanimated"
 import { opacity } from "react-native-redash"
+import MetroTouchable from "./MetroTouchable"
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("screen");
 const expandedContext = createContext(() => {})
@@ -139,7 +140,9 @@ const FlatListItem = ({
                             ]
                         }}
                     >
-                        {children}
+                        <MetroTouchable disabled={expanded}>
+                            {children}
+                        </MetroTouchable>
                     </Animatable.View>
 
                     <Animatable.View

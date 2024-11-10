@@ -17,15 +17,15 @@ export const Select = ({ options, onChange, title, classOverride = "", toggleOnC
                 expanded? {
                     backgroundColor: "white",
                     borderColor: toggleOnColor,
-                    height: 45*(options.length)
+                    height: 45*(options.length)+20, //will probably edit
                 }: {
-                    height: 45,
+                    height: 45, // probably edit too
                     borderColor: "white"
                 }
                 }>
                 {options.map((option, index) => {
                     return (
-                        <MetroTouchable disabled={!expanded} onPress={() => {
+                        <TouchableWithoutFeedback onPress={() => {
                             if (expanded) {
                                 setSelected(option);
                                 onChange(option);
@@ -37,13 +37,15 @@ export const Select = ({ options, onChange, title, classOverride = "", toggleOnC
                             <View style={(!expanded && option.value!==selected.value) && {
                                 height: 0
                             }}>
-                                <Text className={`${expanded && "py-2"} -ml-3 text-lg`} style={[fonts.regular, {
-                                    color: expanded? (option.value===selected.value? toggleOnColor: "black"): "white",
-                                }]}>
-                                    {option.name}
-                                </Text>
+                                <MetroTouchable disabled={!expanded} style={{ marginRight: "auto"}}>
+                                    <Text className={`${expanded && "py-2"} -ml-3 text-lg`} style={[fonts.regular, {
+                                        color: expanded? (option.value===selected.value? toggleOnColor: "black"): "white",
+                                    }]}>
+                                        {option.name}
+                                    </Text>
+                                </MetroTouchable>
                             </View>
-                        </MetroTouchable>
+                        </TouchableWithoutFeedback>
                     )
                 })}
             </Animatable.View>
