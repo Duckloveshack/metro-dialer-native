@@ -161,7 +161,7 @@ const FlatListItem = ({
                                 <TouchableWithoutFeedback
                                     onPress={() => {setExpanded(false); setExpandedIndex(-1)}}
                                 >
-                                    <Text className="text-2xl p-2" style={fonts.light}>
+                                    <Text className="text-2xl p-2 pl-4" style={fonts.light}>
                                         {option.label}
                                     </Text>
                                 </TouchableWithoutFeedback>

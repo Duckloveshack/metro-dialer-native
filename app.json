@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "test-metroos-pivot",
-    "slug": "test-metroos-pivot",
-    "version": "1.0.0",
+    "name": "metro-dialer-native",
+    "slug": "metro-dialer-native",
+    "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",

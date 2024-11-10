@@ -14,7 +14,7 @@ const SpeedDialScreen = ({ navigation, route}) => {
     },
     {
       text: "keypad",
-      onPress: () => {console.log("keypad")},
+      onPress: () => {navigation.navigate("DialScreen")},
       Icon: <Voicemail width={20} stroke={"white"} strokeWidth={3}/>,
       disabled: false
     },

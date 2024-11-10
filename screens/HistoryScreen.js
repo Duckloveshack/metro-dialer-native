@@ -16,7 +16,7 @@ const HistoryScreen = ({navigation, route}) => {
     },
     {
       text: "keypad",
-      onPress: () => {console.log("keypad")},
+      onPress: () => {navigation.navigate("DialScreen")},
       Icon: <Voicemail width={20} stroke={"white"} strokeWidth={3}/>,
       disabled: false
     },
@@ -65,13 +65,13 @@ const HistoryScreen = ({navigation, route}) => {
       number: "+1 (425) 001-0001",
       context_options: [
         {
-          label: "delete"
+          label: "details"
         },
         {
           label: "delete"
         },
         {
-          label: "delete"
+          label: "add to speed dial"
         }
       ]
     },

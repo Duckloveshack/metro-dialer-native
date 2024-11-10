@@ -1,19 +1,15 @@
-import { StyleSheet, Text, StatusBar, View, Easing } from 'react-native';
+import { StatusBar, View, Easing } from 'react-native';
 import MetroTabs from './components/core/MetroTabs';
-import TestScreen from './screens/TestScreen';
 import * as Font from 'expo-font';
 import { AppTitle } from './components/core/AppTitle';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { MenuBar } from './components/core/MenuBar';
-import MainBottomBar from './components/compound/MainBottomBar';
-import { Voicemail, Search, Book, Plus } from "react-native-feather";
+import { CardStyleInterpolators, createStackNavigator } from '@react-navigation/stack';
 import { useState } from 'react';
 import SimCardsManagerModule from "react-native-sim-cards-manager";
 import HistoryScreen from "./screens/HistoryScreen"
 import SpeedDialScreen from './screens/SpeedDialScreen';
 import SettingsMain from "./screens/SettingsMain"
-import { opacity, rotate, rotateY, transformOrigin } from 'react-native-redash';
+import DialScreen from './screens/DialScreen';
 
 const Stack = createStackNavigator();
 
@@ -72,7 +68,7 @@ export default function App() {
                   {
                     rotateY: current.progress.interpolate({
                       inputRange: [0.75, 1],
-                      outputRange: ['60deg', '0deg']
+                      outputRange: ['75deg', '0deg']
                     })
                   },
                   {
@@ -84,7 +80,7 @@ export default function App() {
                   {
                     translateX: current.progress.interpolate({
                       inputRange: [0.75, 1],
-                      outputRange: [30, 0]
+                      outputRange: [125, 0]
                     })
                   },
                   {
@@ -107,7 +103,7 @@ export default function App() {
                     translateX: next
                       ? next.progress.interpolate({
                           inputRange: [0, 0.25],
-                          outputRange: [0, -30],
+                          outputRange: [0, -100],
                         })
                       : 1,
                   }
@@ -125,7 +121,10 @@ export default function App() {
         
       }>
         <Stack.Screen name="PhoneMain" component={PhoneMain} />
-        <Stack.Screen name="SettingsMain" animation="fade" component={SettingsMain} options={{}}/>
+        <Stack.Screen name="SettingsMain" component={SettingsMain} options={{}}/>
+        <Stack.Screen name="DialScreen" component={DialScreen} options={{
+          cardStyleInterpolator: CardStyleInterpolators.forBottomSheetAndroid
+        }}/>
         {/* Add more screens here so we can navigate to them */}
       </Stack.Navigator>
     </NavigationContainer>
