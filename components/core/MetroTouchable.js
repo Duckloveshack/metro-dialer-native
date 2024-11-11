@@ -7,6 +7,7 @@ const { View, TouchableWithoutFeedback } = require("react-native")
 const MetroTouchable = ({
     children,
     onPressIn, onPressOut,
+    onLayout,
     style,
     disabled=false,
     xOffset=0, yOffset=0,
@@ -26,7 +27,7 @@ const MetroTouchable = ({
 
     const viewRef = useRef();
 
-    const onLayout = (e) => {
+    const onLayoutRoot = (e) => {
         containerWidth.value = e.nativeEvent.layout.width;
         containerHeight.value = e.nativeEvent.layout.height;
 
@@ -34,6 +35,8 @@ const MetroTouchable = ({
             containerX.value = pageX-xOffset;
             containerY.value = pageY-yOffset;
         });
+
+        if (onLayout) onLayout(e);
     }
 
     const onTouchStart = (e) => {
@@ -43,7 +46,7 @@ const MetroTouchable = ({
 
     const onTouchMove = (e) => {
         if (!disabled) {
-            const { width, height, pageX, pageY } = e.nativeEvent
+            const {pageX, pageY } = e.nativeEvent
 
             const offsetX = Math.max(Math.min(pageX-containerX.value, containerWidth.value), 0) - containerWidth.value/2;
             const offsetY = Math.max(Math.min(pageY-containerY.value, containerHeight.value), 0) - containerHeight.value/2;
@@ -90,7 +93,7 @@ const MetroTouchable = ({
 
     return(
         <Animated.View
-            onLayout={onLayout}
+            onLayout={onLayoutRoot}
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
@@ -98,6 +101,8 @@ const MetroTouchable = ({
             ref={viewRef}
 
             style={[touchedStyle, style]}
+
+            {...props}
         >
             {/* <TouchableWithoutFeedback onPress={onPress}> */}
                 {children}

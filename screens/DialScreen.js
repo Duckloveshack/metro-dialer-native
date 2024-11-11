@@ -4,59 +4,83 @@ import { FlatList } from "react-native-gesture-handler";
 import { fonts } from "../styles/fonts";
 import { Delete, Save } from "react-native-feather";
 import MetroTouchable from "../components/core/MetroTouchable";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import DTMFAssets from "../components/core/DTMFAssets";
+import { Audio } from 'expo-av';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 const buttonData=[
     {
         index: 1,
-        letters: ""
+        letters: "",
+        DTMF: "1"
     },
     {
         index: 2,
-        letters: "ABC"
+        letters: "ABC",
+        DTMF: "2"
     },
     {
         index: 3,
-        letters: "DEF"
+        letters: "DEF",
+        DTMF: "3"
     },
     {
         index: 4,
-        letters: "GHI"
+        letters: "GHI",
+        DTMF: "4"
     },
     {
         index: 5,
-        letters: "JKL"
+        letters: "JKL",
+        DTMF: "5"
     },
     {
         index: 6,
-        letters: "MNO"
+        letters: "MNO",
+        DTMF: "6"
     },
     {
         index: 7,
-        letters: "PQRS"
+        letters: "PQRS",
+        DTMF: "7"
     },
     {
         index: 8,
-        letters: "TUV"
+        letters: "TUV",
+        DTMF: "8"
     },
     {
         index: 9,
-        letters: "WXYZ"
+        letters: "WXYZ",
+        DTMF: "9"
     }
 ]
 
 const ButtonItem = ({
+    DTMF="",
     disabled=false,
     style,
     children,
     ...props
 }) => {
     const [held, setHeld] = useState(false);
+    const [sound, setSound] = useState(new Audio.Sound());
 
-    const onPressIn = (e) => {
+    const onLayout = async (e) => {
+        if (DTMF.length!=0) {
+            sound.loadAsync(DTMFAssets[`DTMF_${DTMF}`])
+        }
+    }
+
+    const onPressIn = async (e) => {
         setHeld(true);
+
+        if (DTMF.length!=0) {
+            sound.playAsync()
+            sound.setPositionAsync(0)
+        }
     }
 
     const onPressOut = (e) => {
@@ -65,6 +89,7 @@ const ButtonItem = ({
 
     return (
         <MetroTouchable
+            onLayout={onLayout}
             onPressIn={onPressIn}
             onPressOut={onPressOut}
             style={[{
@@ -87,12 +112,34 @@ const ButtonItem = ({
 
 const DialScreen = ({ navigation, route }) => {
     const [number, setNumber] = useState("");
+    const deleteIntervalRef = useRef();
+
+    const deletePressIn = () => {
+        deleteIntervalRef.current = setInterval(() => {
+            setNumber((number) => {
+                if (number.length > 0) {
+                    return number.slice(0, -1);
+                } else {
+                    clearInterval(deleteIntervalRef.current);
+                    return number;
+                }
+            })
+        }, 100);
+    }
+
+    const deletePressOut = () => {
+        clearInterval(deleteIntervalRef.current);
+    }
 
     const numButtonItem = ({item, index}) => {
         return(
-            <ButtonItem style={itemStyle.numButton}>
+            <ButtonItem
+                style={itemStyle.numButton}
+                DTMF={item.DTMF}
+            >
                 <TouchableWithoutFeedback
-                    onPress={ () => { setNumber(number.concat(item.index)) } }
+                    onPress={ () => { setNumber(number.concat(item.index)) }}
+                    touchSoundDisabled={true}
                 >
                     <View style={itemStyle.numButton}>
                         <Text style={[fonts.light, itemStyle.buttonLeadText]}>
@@ -124,6 +171,9 @@ const DialScreen = ({ navigation, route }) => {
                         {number}
                     </Text>
                     <TouchableWithoutFeedback
+                        delayPressIn={500}
+                        onPressIn={deletePressIn}
+                        onPressOut={deletePressOut}
                         onPress={ () => { if (number.length > 0) setNumber(number.slice(0, -1)) } }
                     >
                         <Delete width={40} height={40} stroke={"white"} strokeWidth={1} className={"mt-3"}
@@ -148,9 +198,10 @@ const DialScreen = ({ navigation, route }) => {
                         scrollEnabled={false}
                     />
                     <View style={itemStyle.buttonRow}>
-                        <ButtonItem style={itemStyle.numButton}>
+                        <ButtonItem DTMF={"STAR"} style={itemStyle.numButton}>
                             <TouchableWithoutFeedback
                                 onPress={ () => { setNumber(number.concat("*")) } }
+                                touchSoundDisabled={true}
                             >
                                 <View style={itemStyle.numButton}>
                                     <Text style={[fonts.light, itemStyle.charText, {fontSize: 50, marginTop: 12}]}>
@@ -161,10 +212,12 @@ const DialScreen = ({ navigation, route }) => {
                         </ButtonItem>
                         {numButtonItem({item: {
                             index: 0,
-                            letters: "+"
+                            letters: "+",
+                            DTMF: "0"
                         }})}
-                        <ButtonItem style={itemStyle.numButton}>
+                        <ButtonItem DTMF={"POUND"} style={itemStyle.numButton}>
                             <TouchableWithoutFeedback
+                                touchSoundDisabled={true}
                                 onPress={ () => { setNumber(number.concat("#")) } }
                             >
                                 <View style={itemStyle.numButton}>
