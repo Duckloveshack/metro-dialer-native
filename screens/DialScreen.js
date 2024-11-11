@@ -7,6 +7,7 @@ import MetroTouchable from "../components/core/MetroTouchable";
 import { useRef, useState } from "react";
 import DTMFAssets from "../components/core/DTMFAssets";
 import { Audio } from 'expo-av';
+import { AsYouType } from "libphonenumber-js";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -113,6 +114,7 @@ const ButtonItem = ({
 const DialScreen = ({ navigation, route }) => {
     const [number, setNumber] = useState("");
     const deleteIntervalRef = useRef();
+    const [zeroHeld, setZeroHeld] = useState(0)
 
     const deletePressIn = () => {
         deleteIntervalRef.current = setInterval(() => {
@@ -138,7 +140,7 @@ const DialScreen = ({ navigation, route }) => {
                 DTMF={item.DTMF}
             >
                 <TouchableWithoutFeedback
-                    onPress={ () => { setNumber(number.concat(item.index)) }}
+                    onPress={ () => { if (number.length <= 100) setNumber(number.concat(item.index)) }}
                     touchSoundDisabled={true}
                 >
                     <View style={itemStyle.numButton}>
@@ -163,12 +165,12 @@ const DialScreen = ({ navigation, route }) => {
                         numberOfLines={1}
                         ellipsizeMode="head"
                         style={[fonts.light, {
-                            fontSize: 45,
+                            fontSize: 42,
                             marginRight: 45
                         }]}
                         className={"text-white mr-auto"}
                     >
-                        {number}
+                        { (number.match(/(#)|(\*)/)) || new AsYouType('US').input(number).length < number.length? number: new AsYouType('US').input(number) }
                     </Text>
                     <TouchableWithoutFeedback
                         delayPressIn={500}
@@ -200,7 +202,7 @@ const DialScreen = ({ navigation, route }) => {
                     <View style={itemStyle.buttonRow}>
                         <ButtonItem DTMF={"STAR"} style={itemStyle.numButton}>
                             <TouchableWithoutFeedback
-                                onPress={ () => { setNumber(number.concat("*")) } }
+                                onPress={ () => { if (number.length <= 100) setNumber(number.concat("*")) } }
                                 touchSoundDisabled={true}
                             >
                                 <View style={itemStyle.numButton}>
@@ -210,15 +212,36 @@ const DialScreen = ({ navigation, route }) => {
                                 </View>
                             </TouchableWithoutFeedback>
                         </ButtonItem>
-                        {numButtonItem({item: {
-                            index: 0,
-                            letters: "+",
-                            DTMF: "0"
-                        }})}
+                        <ButtonItem
+                            style={itemStyle.numButton}
+                            DTMF={"0"}
+                        >
+                            <TouchableWithoutFeedback
+                                delayPressIn={500}
+                                onPressIn={() => {
+                                    if (number.length <= 100) setNumber(number.concat("+"));
+                                    setZeroHeld(true)
+                                }}
+                                onPress={() => { 
+                                    if (!zeroHeld && number.length <= 100) setNumber(number.concat("0"));
+                                    setZeroHeld(false)
+                                }}
+                                touchSoundDisabled={true}
+                            >
+                                <View style={itemStyle.numButton}>
+                                    <Text style={[fonts.light, itemStyle.buttonLeadText]}>
+                                        0
+                                    </Text>
+                                    <Text style={[fonts.regular, itemStyle.buttonSubText]}>
+                                        +
+                                    </Text>
+                                </View>
+                            </TouchableWithoutFeedback>
+                        </ButtonItem>
                         <ButtonItem DTMF={"POUND"} style={itemStyle.numButton}>
                             <TouchableWithoutFeedback
                                 touchSoundDisabled={true}
-                                onPress={ () => { setNumber(number.concat("#")) } }
+                                onPress={ () => { if (number.length <= 100) setNumber(number.concat("#")) } }
                             >
                                 <View style={itemStyle.numButton}>
                                     <Text style={[fonts.light, itemStyle.charText]}>
