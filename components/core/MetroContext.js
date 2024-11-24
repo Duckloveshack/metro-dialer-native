@@ -18,14 +18,12 @@ const ContextFlatList = ({
 
     return(
         <ScrollView
-            contentContainerStyle={{
-                height: SCREEN_HEIGHT
-            }}
+            scrollEnabled={true}
         >
             {data.map((item, index) => {
                 return (
                     <expandedContext.Provider value={setExpandedIndex}>
-                        <FlatListItem
+                        <MetroContext
                             key={index}
                             index={index}
                             options={item.context_options}
@@ -39,40 +37,15 @@ const ContextFlatList = ({
                             }}
                         >
                             {renderItem({item, index})}
-                        </FlatListItem>
+                        </MetroContext>
                     </expandedContext.Provider>
                 )
             })}
         </ScrollView>
     );
-
-        // return(
-    //     <FlatList
-    //         style={style}
-    //         contentContainerStyle={{
-    //             height: SCREEN_HEIGHT
-    //         }}
-    //         data={data}
-            
-    //         renderItem={({item, index}) => {
-    //             return(
-    //                 <FlatListItem
-    //                     key={index}
-    //                     options={item.context_options}
-    //                     style={{
-    //                         elevation: 2-index
-    //                     }}
-    //                 >
-    //                     {renderItem({item, index})}
-    //                 </FlatListItem>
-    //             )
-    //         }}
-    //         {...props}
-    //     />
-    // )
 }
 
-const FlatListItem = ({
+const MetroContext = ({
     options,
     children,
     style,
@@ -82,11 +55,26 @@ const FlatListItem = ({
     const [expanded, setExpanded] = useState(false);
     const [touchX, setTouchX] = useState(0);
     const [pressedIn, setPressedIn] = useState(false);
+    const [isDown, setIsDown] = useState(true);
 
     const intervalRef = useRef();
-    const holdTime = useSharedValue(0)
+    const viewRef = useRef();
+    const holdTime = useSharedValue(0);
+    const elementHeight = useSharedValue(0);
 
     const setExpandedIndex = useContext(expandedContext);
+
+    const pressInHandler = (e) => {
+        setPressedIn(true);
+        viewRef?.current.measure((x, y, width, height, pageX, pageY) => {
+            if (pageY/SCREEN_HEIGHT >= 0.5) {
+                setIsDown(false);
+            } else {
+                setIsDown(true);
+            }
+            elementHeight.value=height;
+        })
+    }
 
     const longPressHandler = (e) => {
         if (!expanded) {
@@ -99,7 +87,8 @@ const FlatListItem = ({
                 if (holdTime.value == 300) {
                     setExpanded(true);
                     setHold(false);
-                    setExpandedIndex(index)
+                    setExpandedIndex(index);
+
                     LayoutAnimation.configureNext({
                         duration: 100,
                         update: {type: "easeOut"}
@@ -120,15 +109,17 @@ const FlatListItem = ({
         <Animatable.View
             transition={["opacity", "scale"]}
             style={[{
-                zIndex: expanded? 10: 0
+                zIndex: expanded? 10: 0,
             }, style]}
         >
             <TouchableWithoutFeedback
-                onPressIn={() => {setPressedIn(true)}}
+                onPressIn={pressInHandler}
                 onLongPress={longPressHandler}
                 onPressOut={pressOutHandler}
             >
-                <View>
+                <View
+                    ref={viewRef}
+                >
                     <Animatable.View
                         transition={"scale"}
                         duration={150}
@@ -137,7 +128,8 @@ const FlatListItem = ({
                                 {
                                     scale: pressedIn && !(expanded || hold)? 0.975: 1
                                 }
-                            ]
+                            ],
+                            position: "relative"
                         }}
                     >
                         <MetroTouchable disabled={expanded}>
@@ -149,25 +141,34 @@ const FlatListItem = ({
                         transition={["left", "width"]}
                         duration={hold? 300: 1}
                         easing={"linear"}
-                        style={{
+                        style={[{
                             position: "absolute",
                             paddingVertical: expanded? 10: 0,
                             backgroundColor: hold || expanded? "white": "black",
                             left: hold || expanded? 0: touchX,
                             width: hold || expanded? SCREEN_WIDTH: 0,
                             height: expanded? "auto": 2,
-                            top: 65
-                        }}
+                        }, isDown? {
+                            top: elementHeight.value-5
+                        }: {
+                            bottom: elementHeight.value+3
+                        }]}
                     >
                         {options?.map((option, index) => {
                             return(
+                                <MetroTouchable>
                                 <TouchableWithoutFeedback
-                                    onPress={() => {setExpanded(false); setExpandedIndex(-1)}}
+                                    onPress={() => {
+                                        setExpanded(false);
+                                        setExpandedIndex(-1);
+                                        if (option.onPress) option.onPress();
+                                    }}
                                 >
                                     <Text className="text-2xl p-2 pl-4" style={fonts.light}>
                                         {option.label}
                                     </Text>
                                 </TouchableWithoutFeedback>
+                                </MetroTouchable>
                             )
                         })}
                     </Animatable.View>
@@ -178,3 +179,5 @@ const FlatListItem = ({
 }
 
 export default ContextFlatList;
+
+export { MetroContext }

@@ -32,7 +32,8 @@ export default function App() {
           background: "#000000"
         }
       }}
-    ><StatusBar />
+    >
+      <StatusBar/>
       <Stack.Navigator 
       screenOptions={
         {

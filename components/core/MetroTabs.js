@@ -6,6 +6,8 @@ import Animated, {
   useSharedValue,
   useAnimatedRef,
   useAnimatedScrollHandler,
+  useAnimatedReaction,
+  runOnJS,
 } from "react-native-reanimated";
 import { View, StyleSheet, Dimensions, TouchableOpacity, TouchableWithoutFeedback } from "react-native";
 import { fonts } from "../../styles/fonts";
@@ -35,7 +37,9 @@ const MetroTabs = ({
 }) => {
   const [bottomBarElements, setBottomBarElements] = useState(null)
   const [tabIndex, setTabIndex] = useState(0);
-  const [expanded, setExpanded] = useState(false)
+  const [expanded, setExpanded] = useState(false);
+
+  const tabShare = useSharedValue(0);
 
   const SCREEN_SNAP_INTERVAL = SCREEN_WIDTH - rightOverlapWidth;
   const screenCnt = screens.length;
@@ -110,10 +114,22 @@ const MetroTabs = ({
   const onProgressChange = (offsetProgress, absoluteProgress) => {
     if (Math.round(absoluteProgress) >= screens.length) absoluteProgress=absoluteProgress-screens.length;
     scrollViewX.value = absoluteProgress*SCREEN_WIDTH;
-    if (tabIndex != Math.round(absoluteProgress)) {
-      setTabIndex(Math.round(absoluteProgress))
-    }
+    // if (tabIndex != Math.round(absoluteProgress)) {
+    //   setTabIndex(Math.round(absoluteProgress))
+    // }
+    tabShare.value = Math.round(absoluteProgress);
   }
+  
+  const onScrollPast = (index) => {
+    setTabIndex(index);
+  }
+
+
+  useAnimatedReaction(() => {
+    return tabShare.value
+  }, (data) => {
+    runOnJS(setTabIndex)(data)
+  }, [tabShare])
 
   return (
     <View style={[
@@ -170,8 +186,9 @@ const MetroTabs = ({
         onProgressChange={onProgressChange}
         pagingEnabled={true}
         ref={ref}
-        
-        
+        panGestureHandlerProps={{
+          activeOffsetX: [-20, 20]
+        }}
         
         data={screens}
         renderItem={listItem}

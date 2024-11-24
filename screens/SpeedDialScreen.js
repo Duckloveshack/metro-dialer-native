@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, FlatList, Image } from "react-native";
 import { bottomBarContext } from "../components/core/MetroTabs";
 import { Voicemail, Book, Plus } from "react-native-feather";
 import { fonts } from "../styles/fonts";
+import { MetroContext } from "../components/core/MetroContext";
 
 const SpeedDialScreen = ({ navigation, route}) => {
   const setBottomBarElements = useContext(bottomBarContext);
@@ -43,6 +44,33 @@ const SpeedDialScreen = ({ navigation, route}) => {
   return (
     <View style={styles.container}>
         <Text style={[styles.placeholder, fonts.light]}>Looking for quicker calling? Tap the plus sign to add someone to speed dial.</Text>
+        <MetroContext
+          options={[
+            {
+              label: "test"
+            }
+          ]}
+        >
+          <Text className="text-white text-4xl">test</Text>
+        </MetroContext>
+        <MetroContext
+          options={[
+            {
+              label: "test"
+            }
+          ]}
+        >
+          <Text className="text-white text-4xl">test</Text>
+        </MetroContext>
+        <MetroContext
+          options={[
+            {
+              label: "test"
+            }
+          ]}
+        >
+          <Text className="text-white text-4xl">test</Text>
+        </MetroContext>
     </View>
   );
 };

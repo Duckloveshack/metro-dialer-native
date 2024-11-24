@@ -2,7 +2,7 @@ import { useRef, useState } from "react"
 import { useAnimatedStyle, useSharedValue } from "react-native-reanimated";
 import Animated from "react-native-reanimated";
 
-const { View, TouchableWithoutFeedback } = require("react-native")
+const { View, TouchableWithoutFeedback, Dimensions } = require("react-native")
 
 const MetroTouchable = ({
     children,
@@ -10,7 +10,7 @@ const MetroTouchable = ({
     onLayout,
     style,
     disabled=false,
-    xOffset=0, yOffset=0,
+    // xOffset=0, yOffset=0,
     intensityX=20, intensityY=20,
     transformStyle,
     ...props
@@ -31,21 +31,22 @@ const MetroTouchable = ({
         containerWidth.value = e.nativeEvent.layout.width;
         containerHeight.value = e.nativeEvent.layout.height;
 
-        viewRef?.current.measure((x, y, width, height, pageX, pageY) => {
-            containerX.value = pageX-xOffset;
-            containerY.value = pageY-yOffset;
-        });
-
         if (onLayout) onLayout(e);
     }
 
     const onTouchStart = (e) => {
+        viewRef?.current.measure((x, y, width, height, pageX, pageY) => {
+            containerX.value = pageX//-xOffset;
+            containerY.value = pageY//-yOffset;
+        });
+
         if (onPressIn) onPressIn(e);
         onTouchMove(e);
     }
 
     const onTouchMove = (e) => {
         if (!disabled) {
+
             const {pageX, pageY } = e.nativeEvent
 
             const offsetX = Math.max(Math.min(pageX-containerX.value, containerWidth.value), 0) - containerWidth.value/2;

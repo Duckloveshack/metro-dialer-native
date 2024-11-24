@@ -4,7 +4,7 @@ import { bottomBarContext } from "../components/core/MetroTabs";
 import { Voicemail, Book, Search, User } from "react-native-feather";
 import { fonts } from "../styles/fonts";
 import RoundedButton from "../components/core/RoundedButton";
-import ContextFlatList from "../components/core/ContextFlatList";
+import ContextFlatList from "../components/core/MetroContext";
 
 const HistoryScreen = ({navigation, route}) => {
   const setBottomBarElements = useContext(bottomBarContext);
@@ -98,7 +98,81 @@ const HistoryScreen = ({navigation, route}) => {
           label: "delete"
         },
       ]
-    }
+    },
+    {
+      number: "+1 (425) 001-0001",
+      context_options: [
+        {
+          label: "delete"
+        }
+      ]
+    },
+    {
+      number: "+1 (425) 001-0001",
+      context_options: [
+        {
+          label: "delete"
+        },
+      ]
+    },
+    {
+      number: "+1 (425) 001-0001",
+      context_options: [
+        {
+          label: "delete"
+        }
+      ]
+    },
+    {
+      number: "+1 (425) 001-0001",
+      context_options: [
+        {
+          label: "delete"
+        },
+      ]
+    },
+    {
+      number: "+1 (425) 001-0001",
+      context_options: [
+        {
+          label: "details"
+        },
+        {
+          label: "delete"
+        },
+        {
+          label: "add to speed dial"
+        }
+      ]
+    },
+    {
+      number: "+1 (425) 001-0001",
+      context_options: [
+        {
+          label: "details"
+        },
+        {
+          label: "delete"
+        },
+        {
+          label: "add to speed dial"
+        }
+      ]
+    },
+    {
+      number: "+1 (425) 001-0001",
+      context_options: [
+        {
+          label: "details"
+        },
+        {
+          label: "delete"
+        },
+        {
+          label: "add to speed dial"
+        }
+      ]
+    },
   ]
 
   return (

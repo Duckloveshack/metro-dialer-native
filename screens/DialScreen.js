@@ -8,6 +8,8 @@ import { useRef, useState } from "react";
 import DTMFAssets from "../components/core/DTMFAssets";
 import { Audio } from 'expo-av';
 import { AsYouType } from "libphonenumber-js";
+import { MetroContext } from "../components/core/MetroContext";
+import * as Animatable from "react-native-animatable"
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -114,7 +116,8 @@ const ButtonItem = ({
 const DialScreen = ({ navigation, route }) => {
     const [number, setNumber] = useState("");
     const deleteIntervalRef = useRef();
-    const [zeroHeld, setZeroHeld] = useState(0)
+    const [zeroHeld, setZeroHeld] = useState(0);
+    const [sim, setSim] = useState(0);
 
     const deletePressIn = () => {
         deleteIntervalRef.current = setInterval(() => {
@@ -252,23 +255,34 @@ const DialScreen = ({ navigation, route }) => {
                         </ButtonItem>
                     </View>
                     <View style={itemStyle.buttonRow}>
-                        <ButtonItem disabled={ number.length==0 } style={itemStyle.callButton}>
-                            <TouchableWithoutFeedback
-                                onPress={() => {
-                                    if (number.length != 0) {
-                                        Linking.openURL(`tel:${number}`);
-                                    }
-                                }}
-                            >
-                                <View style={itemStyle.callButton}>
-                                    <Text style={[fonts.regular, itemStyle.callButtonText, {
-                                        color: number.length != 0? "white": "#ffffff7f"
-                                    }]}>
-                                        call
-                                    </Text>
-                                </View>
-                            </TouchableWithoutFeedback>
-                        </ButtonItem>
+                        {/* <MetroContext> */}
+                        <MetroContext style={[{
+                            flex: 2.03,
+                        }]} options={[
+                            {
+                                label: "SIM #1",
+                                onPress: () => { setSim(0) }
+                            },
+                            {
+                                label: "SIM #2",
+                                onPress: () => { setSim(1) }
+                            }
+                        ]}>
+                            <View style={{
+                                aspectRatio: 3.25 / 1,
+                                width: "auto",
+                                backgroundColor: "#383838",
+                                flexDirection: "row"
+                            }}>
+                                <Text style={[itemStyle.callButtonText, { marginLeft: "auto" }]}>call</Text>
+                                <Animatable.Text
+                                    style={[itemStyle.callButtonText, { marginRight: "auto" }]}
+                                    animation={"bounceInDown"}
+                                > SIM #{sim+1}
+                                </Animatable.Text>
+                            </View>
+                        </MetroContext>
+                        {/* </MetroContext> */}
                         <ButtonItem disabled={ number.length==0 } style={itemStyle.saveButton}>
                             <View style={itemStyle.saveButton}>
                                 <Save width={20} stroke={number.length!=0? "white": "#ffffff7f"} strokeWidth={2} className="ml-auto mr-auto mt-auto"/>
@@ -350,7 +364,7 @@ const itemStyle = StyleSheet.create({
     callButtonText: {
         color: "white",
         fontSize: 20,
-        textAlign: "center",
+
         marginTop: "auto",
         marginBottom: "auto"
     },
