@@ -1,17 +1,7 @@
-# Metro-Clock-Native
+# Metro-Dialer-Native
 
-An attempt to create an all-in-one clock app using the design guidelines of Windows 8.1 Metro UI. This is a part of the application suite of a bigger project - Metro OS.
+My ill-fated attempt to recreate the dialer app from Windows Phone 8.1 in React Native. Project associated with Metro OS.
 
-See the [Metro-Browser-Native](https://github.com/god-s-perfect-idiot/metro-browser-native) project for now until I make a proper README for this clock app.
+See the [Metro-Browser-Native](https://github.com/god-s-perfect-idiot/metro-browser-native) and [Metro-Clock-Native](https://github.com/abhra0897/metro-clock-native/tree/master) projects which have provided much of the code and structure for this project <3 (The launch / build stuff is in the former repo)
 
-Follow the instructions given there.
-
-## Demo screenshots:
-
-### Alarm
-![Alarm screen](./screenshots/alarm-demo.jpg)
-
-### Timer
-![Timer screen 1](./screenshots/timer-demo-1.jpg)
-
-![Timer screen 2](./screenshots/timer-demo-2.jpg)
+Contributions very welcome!
