@@ -45,6 +45,9 @@ const ContextFlatList = ({
     );
 }
 
+/**
+ * @deprecated please do not use this.
+ */
 const MetroContext = ({
     options,
     children,

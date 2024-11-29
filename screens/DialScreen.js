@@ -8,8 +8,9 @@ import { useRef, useState } from "react";
 import DTMFAssets from "../components/core/DTMFAssets";
 import { Audio } from 'expo-av';
 import { AsYouType } from "libphonenumber-js";
-import { MetroContext } from "../components/core/MetroContext";
+import MetroContext from "../components/core/NewMetroContext";
 import * as Animatable from "react-native-animatable"
+import MetroView from "../components/core/MetroView";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -98,14 +99,6 @@ const ButtonItem = ({
             style={[{
                 backgroundColor: !disabled && held? "#a013ec": "#383838",
             }, style]}
-            transformStyle={[
-                {
-                    scale: held? 0.95: 1
-                },
-                {
-                    translateY: held? -2: 0
-                }
-            ]}
             yOffset={600}
         >
             {children}
@@ -160,6 +153,7 @@ const DialScreen = ({ navigation, route }) => {
     }
 
     return (
+        <MetroView>
         <View style={styles.container}>
             <AppTitle title="Fake GSM Network"/>
             <View style={styles.screenContainer}>
@@ -255,7 +249,6 @@ const DialScreen = ({ navigation, route }) => {
                         </ButtonItem>
                     </View>
                     <View style={itemStyle.buttonRow}>
-                        {/* <MetroContext> */}
                         <MetroContext style={[{
                             flex: 2.03,
                         }]} options={[
@@ -301,6 +294,7 @@ const DialScreen = ({ navigation, route }) => {
                 </View>
             </View>
         </View>
+        </MetroView>
     )
 }
 

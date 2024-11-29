@@ -13,6 +13,7 @@ import { View, StyleSheet, Dimensions, TouchableOpacity, TouchableWithoutFeedbac
 import { fonts } from "../../styles/fonts";
 import { CombinedBar } from "./MenuBar";
 import Carousel from "react-native-reanimated-carousel"
+import MetroView from "./MetroView";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("screen");
 
@@ -38,6 +39,7 @@ const MetroTabs = ({
   const [bottomBarElements, setBottomBarElements] = useState(null)
   const [tabIndex, setTabIndex] = useState(0);
   const [expanded, setExpanded] = useState(false);
+  //const tabIndx = useSharedValue({});
 
   const tabShare = useSharedValue(0);
 
@@ -132,7 +134,7 @@ const MetroTabs = ({
   }, [tabShare])
 
   return (
-    <View style={[
+    <MetroView style={[
       styles.container
     ]}>
       <View onStartShouldSetResponder={(e) => {
@@ -189,6 +191,9 @@ const MetroTabs = ({
         panGestureHandlerProps={{
           activeOffsetX: [-20, 20]
         }}
+        style={{
+          overflow: "visible"
+        }}
         
         data={screens}
         renderItem={listItem}
@@ -198,7 +203,7 @@ const MetroTabs = ({
       {bottomBar && (
         <CombinedBar expanded = {expanded} setExpanded={setExpanded} scrolled={scrollViewX.value%SCREEN_SNAP_INTERVAL == 0} {...bottomBarElements}/>
       )}
-    </View>
+    </MetroView>
   );
 };
 
@@ -243,6 +248,7 @@ const styles = StyleSheet.create({
   container: {
     paddingTop: 0, //120
     backgroundColor: "black",
+    overflow: "visible"
   },
   screenContainer: {
     height: SCREEN_HEIGHT - 170, // account for container padding top (120 original)

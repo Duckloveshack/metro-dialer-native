@@ -23,14 +23,6 @@ const Button = ({
         setHeld(false)
       }}
       style={style}
-      transformStyle={[
-        {
-            scale: held? 0.95: 1
-        },
-        {
-            translateY: held? -2: 0
-        }
-      ]}
       className={held? `bg-[#a013ec]`: ""}
     >
       <TouchableWithoutFeedback onPress={onPress}>

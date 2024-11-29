@@ -11,7 +11,7 @@ const MetroTouchable = ({
     style,
     disabled=false,
     // xOffset=0, yOffset=0,
-    intensityX=20, intensityY=20,
+    intensityX=15, intensityY=15,
     transformStyle,
     ...props
 }) => {
@@ -19,11 +19,13 @@ const MetroTouchable = ({
     //const pressed = useSharedValue(false);
     const rotateX = useSharedValue(0);
     const rotateY = useSharedValue(0);
+    const scale = useSharedValue(1);
 
     const containerX = useSharedValue(0);
     const containerY = useSharedValue(0);
     const containerWidth = useSharedValue(0);
     const containerHeight = useSharedValue(0);
+    const holdInterval = useRef();
 
     const viewRef = useRef();
 
@@ -42,6 +44,16 @@ const MetroTouchable = ({
 
         if (onPressIn) onPressIn(e);
         onTouchMove(e);
+
+        clearInterval(holdInterval.current);
+        if (!disabled) {
+            holdInterval.current = setInterval(() => {
+                scale.value = Math.max(scale.value-0.02, 0.95)
+                if (scale.value == 0.95) {
+                    clearInterval(holdInterval);
+                }
+            }, 16.66)
+        }
     }
 
     const onTouchMove = (e) => {
@@ -61,7 +73,15 @@ const MetroTouchable = ({
         rotateX.value = 0;
         rotateY.value = 0;
 
-        if (onPressOut) onPressOut(e)
+        clearInterval(holdInterval.current);
+        holdInterval.current = setInterval(() => {
+            scale.value = Math.min(scale.value+0.02, 1)
+            if (scale.value == 1) {
+                clearInterval(holdInterval);
+            }
+        })
+
+        if (onPressOut) onPressOut(e);
     }
 
     const touchedStyle = useAnimatedStyle(() => {
@@ -74,6 +94,9 @@ const MetroTouchable = ({
                     },
                     {
                         rotateY: `${rotateY.value}deg`
+                    },
+                    {
+                        scale: scale.value
                     }
                 ]
             }
@@ -85,6 +108,9 @@ const MetroTouchable = ({
                     },
                     {
                         rotateY: `${rotateY.value}deg`
+                    },
+                    {
+                        scale: scale.value
                     }
                 ]
             }
