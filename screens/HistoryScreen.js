@@ -5,6 +5,7 @@ import { Voicemail, Book, Search, User } from "react-native-feather";
 import { fonts } from "../styles/fonts";
 import RoundedButton from "../components/core/RoundedButton";
 import ContextFlatList from "../components/core/MetroContext";
+import { MetroTheme } from "../styles/theme";
 
 const HistoryScreen = ({navigation, route}) => {
   const setBottomBarElements = useContext(bottomBarContext);
@@ -12,23 +13,23 @@ const HistoryScreen = ({navigation, route}) => {
     {
       text: "voicemail",
       onPress: () => {console.log("voicemail")},
-      Icon: <Voicemail width={20} stroke={"white"} strokeWidth={3}/>
+      Icon: <Voicemail width={20} stroke={MetroTheme.active} strokeWidth={3}/>
     },
     {
       text: "keypad",
       onPress: () => {navigation.navigate("DialScreen")},
-      Icon: <Voicemail width={20} stroke={"white"} strokeWidth={3}/>,
+      Icon: <Voicemail width={20} stroke={MetroTheme.active} strokeWidth={3}/>,
       disabled: false
     },
     {
       text: "phone book",
       onPress: () => {console.log("phone book")},
-      Icon: <Book width={20} stroke={"white"} strokeWidth={3}/>
+      Icon: <Book width={20} stroke={MetroTheme.active} strokeWidth={3}/>
     },
     {
       text: "search",
       onPress: () => {console.log("search")},
-      Icon: <Search width={20} stroke={"white"} strokeWidth={3}/>
+      Icon: <Search width={20} stroke={MetroTheme.active} strokeWidth={3}/>
     }
   ], options: [
     {
@@ -54,7 +55,7 @@ const HistoryScreen = ({navigation, route}) => {
           </Text>
         </View>
         <View style={itemStyles.button}>
-            <RoundedButton Icon={<User width={20} stroke={"white"} strokeWidth={3}/>} action={() => {}}/>
+            <RoundedButton Icon={<User width={20} stroke={MetroTheme.active} strokeWidth={3}/>} action={() => {}}/>
           </View>
       </View>
     );
@@ -191,21 +192,21 @@ const HistoryScreen = ({navigation, route}) => {
 
 const styles = StyleSheet.create({
     container: {
-      backgroundColor: "black",
+      backgroundColor: MetroTheme.background,
       paddingTop: 10
     },
     list: {
       paddingBottom: 30,
     },
     itemContainer: {
-      backgroundColor: "black",
+      backgroundColor: MetroTheme.background,
       flexDirection: "row",
       marginStart: 10,
       marginBottom: 14,
       width: "100%"
     },
     placeholder: {
-      color: "gray",
+      color: MetroTheme.description,
       fontSize: 27,
       padding: 20
     }
@@ -216,11 +217,11 @@ const itemStyles = StyleSheet.create({
       marginStart: 10,
     },
     number: {
-      color: "white",
+      color: MetroTheme.active,
       fontSize: 25
     },
     details: {
-      color: "gray",
+      color: MetroTheme.description,
       fontSize: 15
     },
     button: {

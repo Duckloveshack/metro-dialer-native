@@ -6,6 +6,7 @@ import * as Animatable from "react-native-animatable"
 import Link from "../core/Link";
 import { red } from "react-native-redash";
 import { FadeInUp } from "react-native-reanimated";
+import { MetroTheme } from "../../styles/theme";
 
 const ShortMenu = ({ children, handleExpand }) => {
     return (
@@ -161,7 +162,7 @@ export const CombinedBar = ({ options, controls, oldControls, height = 14, disab
           height: expanded ? (options? 350: 80) : 60,
           marginBottom: 0,
           flexDirection: "column",
-          backgroundColor: "#222",
+          backgroundColor: MetroTheme.menu,
           position: "absolute",
           bottom: 0,
           width: "100%",
@@ -211,7 +212,7 @@ export const CombinedBar = ({ options, controls, oldControls, height = 14, disab
                         key={Math.random()}
                       >
                       <Text style={[
-                        { color: disabled ? '#8a8a8a' : 'white', fontSize: 10, position: "absolute" },
+                        { color: disabled ? MetroTheme.inactive : MetroTheme.active, fontSize: 10, position: "absolute" },
                         fonts.light
                       ]}>
                         {control.text}
@@ -232,9 +233,9 @@ export const CombinedBar = ({ options, controls, oldControls, height = 14, disab
                 gap: 4, 
                 paddingTop: 8 
               }}>
-                <View style={{ width: 4, height: 4, backgroundColor: 'white', borderRadius: 2 }} />
-                <View style={{ width: 4, height: 4, backgroundColor: 'white', borderRadius: 2 }} />
-                <View style={{ width: 4, height: 4, backgroundColor: 'white', borderRadius: 2 }} />
+                <View style={{ width: 4, height: 4, backgroundColor: MetroTheme.active, borderRadius: 2 }} />
+                <View style={{ width: 4, height: 4, backgroundColor: MetroTheme.active, borderRadius: 2 }} />
+                <View style={{ width: 4, height: 4, backgroundColor: MetroTheme.active, borderRadius: 2 }} />
               </View>
             </TouchableWithoutFeedback>
           </View>

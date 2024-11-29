@@ -1,5 +1,6 @@
 import { Text, TouchableWithoutFeedback, View } from "react-native";
 import { fonts } from "../../styles/fonts";
+import { MetroTheme } from "../../styles/theme";
 
 const Link = ({
   to,
@@ -15,10 +16,10 @@ const Link = ({
     <TouchableWithoutFeedback onPress={onPress}>
       <View className="flex flex-col items-start">
         <Text
-          className={`${
-            disabled ? "text-[#8a8a8a]" : "text-white"
-          } ${classOverride} ${isLowerCase && "lowercase"}`}
-          style={fonts.light}
+          className={`${classOverride} ${isLowerCase && "lowercase"}`}
+          style={[fonts.light, {
+            color: disabled? MetroTheme.description: MetroTheme.active
+          }]}
           numberOfLines={numberOfLines}
         >
           {text}

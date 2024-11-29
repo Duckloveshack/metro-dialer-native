@@ -9,6 +9,7 @@ import Button from "../components/core/Button";
 import Modal from "../components/core/MetroModal";
 import MetroModal from "../components/core/MetroModal";
 import { useState } from "react";
+import { MetroTheme } from "../styles/theme";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("screen");
 
@@ -72,7 +73,7 @@ const SettingsMain = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
       paddingTop: 0, //120
-      backgroundColor: "black"
+      backgroundColor: MetroTheme.background
     },
     screenContainer: {
       height: "100%", // account for container padding top (120 original)
@@ -80,7 +81,7 @@ const styles = StyleSheet.create({
     },
     tabContainer: {
       flexDirection: "column",
-      backgroundColor: "black",
+      backgroundColor: MetroTheme.background,
       marginTop: 16,
       padding: 6,
     },

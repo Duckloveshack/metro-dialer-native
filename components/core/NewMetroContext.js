@@ -4,6 +4,7 @@ import { View, Text, TouchableWithoutFeedback, Dimensions, LayoutAnimation} from
 import { useContext, useState, useRef } from "react";
 import { fonts } from "../../styles/fonts";
 import { scaleContext } from "./MetroView";
+import { MetroTheme } from "../../styles/theme";
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("screen");
 
@@ -140,7 +141,7 @@ const MetroContext = ({
                     style={{
                         position: "absolute",
                         zIndex: -1, 
-                        backgroundColor: "black",
+                        backgroundColor: MetroTheme.background,
                         opacity: 0.5,
                         left: 0,
                         top: 0,
@@ -175,7 +176,7 @@ const MetroContext = ({
             <Animated.View
                 style={[{
                     position: "absolute",
-                    backgroundColor: "white",
+                    backgroundColor: MetroTheme.foreground,
                     paddingVertical: 14,
                     zIndex: 20
                 }, contextMenuStyle, !expanded && {
@@ -202,7 +203,7 @@ const MetroContext = ({
                                 }}
                             >
                                 <Text
-                                    style={[fonts.light]}
+                                    style={[fonts.light, { color: MetroTheme.background}]}
                                     className={"text-2xl"}
                                 >
                                     {option.label}

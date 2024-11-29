@@ -9,6 +9,7 @@ import Animated, {
   Extrapolation,
   interpolateColor,
 } from 'react-native-reanimated';
+import { MetroTheme } from '../../styles/theme';
 
 const BORDER_WIDTH = 3;
 
@@ -20,9 +21,9 @@ const ToggleSwitch = ({
   isOn = false,
   toggleOffColor = 'black',
   toggleOnColor = "#a013ec",
-  knobColor = 'white',
-  outerBorderColor = 'white',
-  innerBorderColor = 'black',
+  knobColor = MetroTheme.active,
+  outerBorderColor = MetroTheme.foreground,
+  innerBorderColor = MetroTheme.background,
   height = 25,
   width = 60,
 }) => {

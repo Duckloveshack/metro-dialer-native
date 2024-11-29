@@ -4,6 +4,7 @@ import { bottomBarContext } from "../components/core/MetroTabs";
 import { Voicemail, Book, Plus } from "react-native-feather";
 import { fonts } from "../styles/fonts";
 import MetroContext from "../components/core/NewMetroContext";
+import { MetroTheme } from "../styles/theme";
 
 const SpeedDialScreen = ({ navigation, route}) => {
   const setBottomBarElements = useContext(bottomBarContext);
@@ -11,23 +12,23 @@ const SpeedDialScreen = ({ navigation, route}) => {
     {
       text: "voicemail",
       onPress: () => {console.log("voicemail")},
-      Icon: <Voicemail width={20} stroke={"white"} strokeWidth={3}/>
+      Icon: <Voicemail width={20} stroke={MetroTheme.active} strokeWidth={3}/>
     },
     {
       text: "keypad",
       onPress: () => {navigation.navigate("DialScreen")},
-      Icon: <Voicemail width={20} stroke={"white"} strokeWidth={3}/>,
+      Icon: <Voicemail width={20} stroke={MetroTheme.active} strokeWidth={3}/>,
       disabled: false
     },
     {
       text: "phone book",
       onPress: () => {console.log("phone book")},
-      Icon: <Book width={20} stroke={"white"} strokeWidth={3}/>
+      Icon: <Book width={20} stroke={MetroTheme.active} strokeWidth={3}/>
     },
     {
       text: "add",
       onPress: () => {console.log("search")},
-      Icon: <Plus width={20} stroke={"white"} strokeWidth={3}/>
+      Icon: <Plus width={20} stroke={MetroTheme.active} strokeWidth={3}/>
     }
   ], options: [
     {
@@ -52,7 +53,7 @@ const SpeedDialScreen = ({ navigation, route}) => {
             label: "test 2"
           }
         ]}>
-          <Text className="text-8xl text-white">aaaa</Text>
+          <Text className="text-8xl text-gray">aaaa</Text>
         </MetroContext>
         <MetroContext options={[
           {
@@ -62,7 +63,7 @@ const SpeedDialScreen = ({ navigation, route}) => {
             label: "test 2"
           }
         ]}>
-          <Text className="text-8xl text-white">aaaa</Text>
+          <Text className="text-8xl text-gray">aaaa</Text>
         </MetroContext>
         <MetroContext options={[
           {
@@ -72,7 +73,7 @@ const SpeedDialScreen = ({ navigation, route}) => {
             label: "test 2"
           }
         ]}>
-          <Text className="text-8xl text-white">aaaa</Text>
+          <Text className="text-8xl text-gray">aaaa</Text>
         </MetroContext>
     </View>
   );
@@ -81,7 +82,7 @@ const SpeedDialScreen = ({ navigation, route}) => {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: "black",
+      backgroundColor: MetroTheme.background,
     },
     list: {
       paddingBottom: 30,
@@ -92,7 +93,7 @@ const styles = StyleSheet.create({
       marginBottom: 10,
     },
     placeholder: {
-      color: "gray",
+      color: MetroTheme.description,
       fontSize: 27,
       padding: 20
     },

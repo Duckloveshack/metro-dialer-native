@@ -14,6 +14,7 @@ import { fonts } from "../../styles/fonts";
 import { CombinedBar } from "./MenuBar";
 import Carousel from "react-native-reanimated-carousel"
 import MetroView from "./MetroView";
+import { MetroTheme } from "../../styles/theme";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("screen");
 
@@ -206,10 +207,6 @@ const MetroTabs = ({
     </MetroView>
   );
 };
-
-const activeColor = "#ffffff";
-const inactiveColor = "#333333";
-
 const HeaderItem = ({ item, index, maxLen, scrollViewX, onPress, onLayout, screenSnapInterval }) => {
 
   const animatedHeaderColorStyle = useAnimatedStyle(() => {
@@ -222,7 +219,7 @@ const HeaderItem = ({ item, index, maxLen, scrollViewX, onPress, onLayout, scree
       // generate a color array with active color in the index position
       new Array(maxLen)
         .fill(0)
-        .map((_, i) => (i%(maxLen) === index ? activeColor : inactiveColor)),
+        .map((_, i) => (i%(maxLen) === index ? MetroTheme.active : MetroTheme.inactive)),
     );
     // const bg = index == 0 ? "blue" : index == 1 ? "green" : "magenta";
     return {
@@ -247,7 +244,7 @@ const HeaderItem = ({ item, index, maxLen, scrollViewX, onPress, onLayout, scree
 const styles = StyleSheet.create({
   container: {
     paddingTop: 0, //120
-    backgroundColor: "black",
+    backgroundColor: MetroTheme.background,
     overflow: "visible"
   },
   screenContainer: {
@@ -258,7 +255,7 @@ const styles = StyleSheet.create({
   },
   tabContainer: {
     flexDirection: "row",
-    backgroundColor: "black",
+    backgroundColor: MetroTheme.background,
     paddingTop: 4,
     paddingBottom: 4,
   },

@@ -4,6 +4,7 @@ import Button from "./Button";
 import * as Animatable from 'react-native-animatable'
 import { useEffect, useState } from "react";
 import Animated, { interpolate, useAnimatedStyle, useSharedValue } from "react-native-reanimated";
+import { MetroTheme } from "../../styles/theme";
 
 const MetroModal = ({
   buttons=[],
@@ -96,10 +97,10 @@ const MetroModal = ({
             duration={100}
             easing={"linear"}
           >
-            <Text style={[fonts.regular]} className="text-2xl text-white">
+            <Text style={[fonts.regular, { color: MetroTheme.active }]} className="text-2xl">
               {title}
             </Text>
-            <Text style={[fonts.regular]} className="text-base text-white my-6">
+            <Text style={[fonts.regular, { color: MetroTheme.active }]} className="text-base text-white my-6">
               {description}
             </Text>
             <View className="flex-row gap-2">
@@ -129,7 +130,7 @@ const styles = StyleSheet.create({
     paddingTop: StatusBar.currentHeight+15,
     //marginTop: -StatusBar.currentHeight,
     padding: 15,
-    backgroundColor: "#303030",
+    backgroundColor: MetroTheme.menu,
     position: "absolute",
     zIndex: 99,
     width: "100%",

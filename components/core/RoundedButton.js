@@ -1,5 +1,6 @@
 import { View, Text, TouchableWithoutFeedback } from "react-native";
 import * as Animatable from "react-native-animatable"
+import { MetroTheme } from "../../styles/theme";
 
 const RoundedButton = ({ classOverrides = "", Icon, action, disabled=false, bounce=false, disappear=false }) => {
   const fadeOutUpCustom = {
@@ -20,11 +21,8 @@ const RoundedButton = ({ classOverrides = "", Icon, action, disabled=false, boun
       }}
     >
       <Animatable.View easing={disappear? "ease-in": "ease-out-back"} duration={disappear? 150: (bounce? 300: 1)} animation={disappear? fadeOutUpCustom: "fadeInUp"}
-        className={`rounded-full border-2 h-9 w-9 flex items-center justify-center ${
-          disabled ? "border-[#8a8a8a]" : "border-white"
-        } ${classOverrides}`}
+        className={`rounded-full border-2 h-9 w-9 flex items-center justify-center ${classOverrides}`} style={{ borderColor: disabled? MetroTheme.inactive: MetroTheme.active}}
       >
-        {/* <Copy  width={20} stroke={"white"}/> */}
         {Icon}
       </Animatable.View>
     </TouchableWithoutFeedback>

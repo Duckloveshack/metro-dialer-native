@@ -11,6 +11,7 @@ import { AsYouType } from "libphonenumber-js";
 import MetroContext from "../components/core/NewMetroContext";
 import * as Animatable from "react-native-animatable"
 import MetroView from "../components/core/MetroView";
+import { MetroTheme } from "../styles/theme";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -97,7 +98,7 @@ const ButtonItem = ({
             onPressIn={onPressIn}
             onPressOut={onPressOut}
             style={[{
-                backgroundColor: !disabled && held? "#a013ec": "#383838",
+                backgroundColor: !disabled && held? "#a013ec": MetroTheme.inactive,
             }, style]}
             yOffset={600}
         >
@@ -163,9 +164,10 @@ const DialScreen = ({ navigation, route }) => {
                         ellipsizeMode="head"
                         style={[fonts.light, {
                             fontSize: 42,
-                            marginRight: 45
+                            marginRight: 45,
+                            color: MetroTheme.active
                         }]}
-                        className={"text-white mr-auto"}
+                        className={"mr-auto"}
                     >
                         { (number.match(/(#)|(\*)/)) || new AsYouType('US').input(number).length < number.length? number: new AsYouType('US').input(number) }
                     </Text>
@@ -175,7 +177,7 @@ const DialScreen = ({ navigation, route }) => {
                         onPressOut={deletePressOut}
                         onPress={ () => { if (number.length > 0) setNumber(number.slice(0, -1)) } }
                     >
-                        <Delete width={40} height={40} stroke={"white"} strokeWidth={1} className={"mt-3"}
+                        <Delete width={40} height={40} stroke={MetroTheme.active} strokeWidth={1} className={"mt-3"}
                             style={{
                                 display: number.length!=0? "flex": "none",
                                 marginLeft: "auto"
@@ -264,12 +266,12 @@ const DialScreen = ({ navigation, route }) => {
                             <View style={{
                                 aspectRatio: 3.25 / 1,
                                 width: "auto",
-                                backgroundColor: "#383838",
+                                backgroundColor: MetroTheme.inactive,
                                 flexDirection: "row"
                             }}>
-                                <Text style={[itemStyle.callButtonText, { marginLeft: "auto" }]}>call</Text>
+                                <Text style={[itemStyle.callButtonText, { marginLeft: "auto", color: number.length!=0? MetroTheme.active: MetroTheme.description }]}>call</Text>
                                 <Animatable.Text
-                                    style={[itemStyle.callButtonText, { marginRight: "auto" }]}
+                                    style={[itemStyle.callButtonText, { marginRight: "auto", color: number.length!=0? MetroTheme.active: MetroTheme.description  }]}
                                     animation={"bounceInDown"}
                                 > SIM #{sim+1}
                                 </Animatable.Text>
@@ -278,11 +280,11 @@ const DialScreen = ({ navigation, route }) => {
                         {/* </MetroContext> */}
                         <ButtonItem disabled={ number.length==0 } style={itemStyle.saveButton}>
                             <View style={itemStyle.saveButton}>
-                                <Save width={20} stroke={number.length!=0? "white": "#ffffff7f"} strokeWidth={2} className="ml-auto mr-auto mt-auto"/>
+                                <Save width={20} stroke={number.length!=0? MetroTheme.active: MetroTheme.description} strokeWidth={2} className="ml-auto mr-auto mt-auto"/>
                                 <Text
                                     style={[
                                         fonts.regular,
-                                        { color: number.length != 0? "white": "#ffffff7f" }
+                                        { color: number.length != 0? MetroTheme.active: MetroTheme.description }
                                     ]}
                                     className="text-lg text-white text-center mb-auto"
                                 >
@@ -301,7 +303,7 @@ const DialScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
     container: {
       paddingTop: 0, //120
-      backgroundColor: "black"
+      backgroundColor: MetroTheme.background
     },
     screenContainer: {
         height: SCREEN_HEIGHT-20, // account for container padding top (120 original)
@@ -313,7 +315,7 @@ const styles = StyleSheet.create({
         paddingTop: 15
     },
     padContainer: {
-      backgroundColor: "#1f1f1f",
+      backgroundColor: MetroTheme.menu,
       height: "auto",
       paddingTop: 3
     
@@ -333,7 +335,7 @@ const itemStyle = StyleSheet.create({
     },
     buttonLeadText: {
         flex: 1,
-        color: "white",
+        color: MetroTheme.active,
         fontSize: 35,
         verticalAlign: "middle",
         textAlign: "right",
@@ -341,11 +343,11 @@ const itemStyle = StyleSheet.create({
     },
     buttonSubText: {
         flex: 1,
-        color: "#ffffff7f",
+        color: MetroTheme.description,
         verticalAlign: "middle"
     },
     charText: {
-        color: "white",
+        color: MetroTheme.active,
         marginLeft: "auto",
         marginRight: "auto",
         fontSize: 35,
@@ -356,7 +358,6 @@ const itemStyle = StyleSheet.create({
         verticalAlign: "middle"
     },
     callButtonText: {
-        color: "white",
         fontSize: 20,
 
         marginTop: "auto",

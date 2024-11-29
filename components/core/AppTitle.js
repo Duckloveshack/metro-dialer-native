@@ -1,5 +1,6 @@
 import { Text, StyleSheet } from "react-native"
 import { fonts } from "../../styles/fonts"
+import { MetroTheme } from "../../styles/theme"
 
 export const AppTitle = ({title}) => {
     return (
@@ -15,7 +16,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
     // paddingLeft: 10,
     fontSize: 14,
-    color: "white",
+    color: MetroTheme.active,
     fontWeight: "bold",
     }
 })

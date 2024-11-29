@@ -10,6 +10,7 @@ import HistoryScreen from "./screens/HistoryScreen"
 import SpeedDialScreen from './screens/SpeedDialScreen';
 import SettingsMain from "./screens/SettingsMain"
 import DialScreen from './screens/DialScreen';
+import { MetroTheme } from './styles/theme';
 
 const Stack = createStackNavigator();
 
@@ -29,7 +30,7 @@ export default function App() {
     <NavigationContainer
       theme={{
         colors: {
-          background: "#000000"
+          background: MetroTheme.background
         }
       }}
     >
@@ -57,7 +58,7 @@ export default function App() {
           cardStyleInterpolator: ({ current, next, layouts }) => {
             return {
               cardStyle: {
-                backgroundColor: "black",
+                backgroundColor: MetroTheme.background,
                 transformOrigin: "40px 50%",
 
                 opacity: current.progress.interpolate({
@@ -150,7 +151,7 @@ const PhoneMain = ({navigation, route}) => {
   //   })
 
   return (
-    <View style={{backgroundColor: "black", }}>
+    <View style={{backgroundColor: MetroTheme.background, }}>
 
       <AppTitle title={carrier}></AppTitle>
       <MetroTabs
