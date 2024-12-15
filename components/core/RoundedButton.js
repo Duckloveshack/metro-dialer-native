@@ -1,7 +1,8 @@
+import { Foundation } from "@expo/vector-icons";
 import { View, Text, TouchableWithoutFeedback } from "react-native";
 import * as Animatable from "react-native-animatable"
 
-const RoundedButton = ({ classOverrides = "", Icon, action, disabled=false, bounce=false, disappear=false }) => {
+const RoundedButton = ({ classOverrides = "", icon="x", Icon, action, disabled=false, bounce=false, disappear=false }) => {
   const fadeOutUpCustom = {
     0: {
       translateY: 0,
@@ -25,7 +26,7 @@ const RoundedButton = ({ classOverrides = "", Icon, action, disabled=false, boun
         } ${classOverrides}`}
       >
         {/* <Copy  width={20} stroke={"white"}/> */}
-        {Icon}
+        {Icon? Icon: <Foundation name={icon} size={20} color={"white"}/>}
       </Animatable.View>
     </TouchableWithoutFeedback>
   );

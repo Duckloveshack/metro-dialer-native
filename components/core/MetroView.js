@@ -17,7 +17,7 @@ const MetroView = ({
                 {
                     scale: UIScale.value
                 }
-            ],
+            ]
         })
     });
 

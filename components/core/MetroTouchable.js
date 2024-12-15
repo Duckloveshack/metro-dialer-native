@@ -59,8 +59,19 @@ const MetroTouchable = ({
     const onTouchMove = (e) => {
         if (!disabled) {
 
-            const {pageX, pageY } = e.nativeEvent
+            const { pageX, pageY } = e.nativeEvent
 
+            // const elementCenterX = containerX.value+containerWidth.value/2;
+            // const elementCenterY = containerY.value+containerHeight.value/2;
+
+            // const distance = Math.hypot(pageX-elementCenterX, pageY-elementCenterY)
+
+            // const distX = (pageX-elementCenterX);
+            // const distY = (pageY-elementCenterY)
+            // console.log(distX)
+
+            // rotateY.value = Math.atan2(distX, distY) * (180/Math.PI);
+            // rotateX.value = (distance / 250) * (180/Math.PI)
             const offsetX = Math.max(Math.min(pageX-containerX.value, containerWidth.value), 0) - containerWidth.value/2;
             const offsetY = Math.max(Math.min(pageY-containerY.value, containerHeight.value), 0) - containerHeight.value/2;
 

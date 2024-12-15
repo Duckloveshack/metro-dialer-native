@@ -1,49 +1,74 @@
 import React, { Component, useContext } from "react";
-import { StyleSheet, View, Text, FlatList, Image } from "react-native";
-import { bottomBarContext } from "../components/core/MetroTabs";
+import { StyleSheet, View, Text, FlatList, Image, ScrollView } from "react-native";
+import { tabContext } from "../components/core/MetroTabs";
 import { Voicemail, Book, Search, User } from "react-native-feather";
 import { fonts } from "../styles/fonts";
 import RoundedButton from "../components/core/RoundedButton";
-import ContextFlatList from "../components/core/MetroContext";
+//import { ScrollView } from "react-native-gesture-handler";
+import MetroContext from "../components/core/MetroContext";
+import MetroScroll from "../components/core/MetroScroll";
+import { runOnJS, useAnimatedReaction } from "react-native-reanimated";
+import Foundation from "@expo/vector-icons/Foundation"
 
 const HistoryScreen = ({navigation, route}) => {
-  const setBottomBarElements = useContext(bottomBarContext);
-  setBottomBarElements({controls: [
-    {
-      text: "voicemail",
-      onPress: () => {console.log("voicemail")},
-      Icon: <Voicemail width={20} stroke={"white"} strokeWidth={3}/>
+  const { bottomBar, currentTabIndex, tabIndex } = useContext(tabContext);
+
+  const onVoicemailButton = () => { console.log("voicemail") }
+  const onKeypadButton = () => { navigation.navigate("DialScreen") }
+  const onPhonebookButton = () => { console.log("phonebook") }
+  const onSearchButton = () => { console.log("search") }
+
+  const onSettingsLink = () => { navigation.navigate("SettingsMain") }
+
+  useAnimatedReaction(
+    () => {
+      return Math.round(currentTabIndex.value)
     },
-    {
-      text: "keypad",
-      onPress: () => {navigation.navigate("DialScreen")},
-      Icon: <Voicemail width={20} stroke={"white"} strokeWidth={3}/>,
-      disabled: false
+    (result) => {
+      if (result == tabIndex) {
+        bottomBar.value = {controls: [
+          {
+            text: "voicemail",
+            onPress: onVoicemailButton,
+            icon: "telephone"
+          },
+          {
+            text: "keypad",
+            onPress: onKeypadButton,
+            icon: "thumbnails",
+            disabled: false
+          },
+          {
+            text: "phone book",
+            onPress: onPhonebookButton,
+            icon: "address-book"
+          },
+          {
+            text: "search",
+            onPress: onSearchButton,
+            icon: "magnifying-glass",
+          }
+        ], options: [
+          {
+            text: "settings",
+            onPress: onSettingsLink
+          },
+          {
+            text: "delete all",
+            onPress: null,
+            disabled: true
+          },
+        ]}
+      }
     },
-    {
-      text: "phone book",
-      onPress: () => {console.log("phone book")},
-      Icon: <Book width={20} stroke={"white"} strokeWidth={3}/>
-    },
-    {
-      text: "search",
-      onPress: () => {console.log("search")},
-      Icon: <Search width={20} stroke={"white"} strokeWidth={3}/>
-    }
-  ], options: [
-    {
-      text: "settings",
-      onPress: () => {navigation.navigate("SettingsMain")}
-    },
-    {
-      text: "delete all",
-      onPress: null,
-      disabled: true
-    },
-  ]});
+    [currentTabIndex]
+  );
 
   const historyItem = ({item, index}) => {
     return(
+      <MetroContext
+        options={item.context_options}
+      >
       <View style={styles.itemContainer}>
         <View style={itemStyles.infoContainer}>
           <Text style={[itemStyles.number, fonts.light]}>
@@ -54,9 +79,11 @@ const HistoryScreen = ({navigation, route}) => {
           </Text>
         </View>
         <View style={itemStyles.button}>
-            <RoundedButton Icon={<User width={20} stroke={"white"} strokeWidth={3}/>} action={() => {}}/>
+            {/* <RoundedButton Icon={<User width={20} stroke={"white"} strokeWidth={3}/>} action={() => {}}/> */}
+            <RoundedButton icon={"torso"} action={() => {}}/>
           </View>
       </View>
+      </MetroContext>
     );
   }
 
@@ -175,24 +202,56 @@ const HistoryScreen = ({navigation, route}) => {
     },
   ]
 
-  return (
-    <View style={styles.container}>
-        {sampleData? (        
-          <ContextFlatList
-            data={sampleData}
-            renderItem={historyItem}
-          />
-        ) : (
-          <Text style={[styles.placeholder, fonts.light]}>Calls you make or receive will appear here. Tap the keypad icon to call someone.</Text>
-        )}
-    </View>
-  );
+  // return (
+  //   <View style={styles.container}>
+  //       {sampleData? (        
+  //         // <ContextFlatList
+  //         //   data={sampleData}
+  //         //   renderItem={historyItem}
+  //         // />
+  //         // <ScrollView
+  //         //   style={{
+  //         //     zIndex: 1,
+  //         //     backgroundColor: "red"
+  //         //   }}
+  //         // >
+  //           {sampleData.map((data, index) => {
+  //             return (
+  //               <MetroContext
+  //                 options={data.context_options}
+  //               >
+  //                 {historyItem({item: data, index: index})}
+  //               </MetroContext>
+  //             )
+  //           })}
+  //         // </ScrollView>
+  //       ) : (
+  //         <Text style={[styles.placeholder, fonts.light]}>Calls you make or receive will appear here. Tap the keypad icon to call someone.</Text>
+  //       )}
+  //   </View>
+  // );
+
+  return sampleData? (
+    <ScrollView style={[styles.container]}>
+        <View>
+            {sampleData.map((data, index) => {
+              return historyItem({item: data, index: index})
+            })}
+        </View>
+    </ScrollView>
+    // <MetroScroll
+    //   data={sampleData}
+    //   renderItem={historyItem}
+    // />
+  ) : (
+    <Text style={[styles.placeholder, fonts.light]}>Calls you make or receive will appear here. Tap the keypad icon to call someone.</Text>
+  )
 };
 
 const styles = StyleSheet.create({
     container: {
       backgroundColor: "black",
-      paddingTop: 10
+      paddingTop: 10,
     },
     list: {
       paddingBottom: 30,
@@ -201,8 +260,9 @@ const styles = StyleSheet.create({
       backgroundColor: "black",
       flexDirection: "row",
       marginStart: 10,
-      marginBottom: 14,
-      width: "100%"
+      paddingBottom: 7,
+      paddingTop: 7,
+      width: "100%",
     },
     placeholder: {
       color: "gray",

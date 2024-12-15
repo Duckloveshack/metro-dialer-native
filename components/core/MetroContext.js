@@ -1,186 +1,245 @@
-import { View, Text, LayoutAnimation, Dimensions, FlatList, TouchableWithoutFeedback, ScrollView } from "react-native"
-import * as Animatable from "react-native-animatable"
-import { fonts } from "../../styles/fonts"
-import { useState, useRef, useEffect, createContext, useContext } from "react"
-import { useSharedValue } from "react-native-reanimated"
-import { opacity } from "react-native-redash"
-import MetroTouchable from "./MetroTouchable"
+import Animated, { interpolate, useAnimatedStyle, useSharedValue } from "react-native-reanimated";
+import MetroTouchable from "./MetroTouchable";
+import { View, Text, TouchableWithoutFeedback, Dimensions, LayoutAnimation} from "react-native";
+import { useContext, useState, useRef, useEffect } from "react";
+import { fonts } from "../../styles/fonts";
+import { scaleContext } from "./MetroView";
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("screen");
-const expandedContext = createContext(() => {})
+const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("screen");
 
-const ContextFlatList = ({
-    data, renderItem=() => {},
+const MetroContext = ({
+    options,
+    onExpand,
+    onDismissal,
+    children,
     style,
     ...props
 }) => {
-    const [expandedIndex, setExpandedIndex] = useState(-1)
-
-    return(
-        <ScrollView
-            scrollEnabled={true}
-        >
-            {data.map((item, index) => {
-                return (
-                    <expandedContext.Provider value={setExpandedIndex}>
-                        <MetroContext
-                            key={index}
-                            index={index}
-                            options={item.context_options}
-                            style={{
-                                opacity: (expandedIndex!=-1 && index!=expandedIndex)? 0.5: 1,
-                                transform: [
-                                    {
-                                        scale: (expandedIndex!=-1 && index!=expandedIndex)? 0.95: 1
-                                    }
-                                ]
-                            }}
-                        >
-                            {renderItem({item, index})}
-                        </MetroContext>
-                    </expandedContext.Provider>
-                )
-            })}
-        </ScrollView>
-    );
-}
-
-/**
- * @deprecated please do not use this.
- */
-const MetroContext = ({
-    options,
-    children,
-    style,
-    index
-}) => {
-    const [hold, setHold] = useState(false);
     const [expanded, setExpanded] = useState(false);
-    const [touchX, setTouchX] = useState(0);
-    const [pressedIn, setPressedIn] = useState(false);
-    const [isDown, setIsDown] = useState(true);
 
-    const intervalRef = useRef();
-    const viewRef = useRef();
-    const holdTime = useSharedValue(0);
-    const elementHeight = useSharedValue(0);
+    const holdProgress = useSharedValue(0);
+    const holdInterval = useSharedValue();
+    const touchX = useSharedValue(0);
+    const [elementProps, setElementProps] = useState({
+        height: 0,
+        width: 0,
+        x: 0,
+        y: 0
+    });
 
-    const setExpandedIndex = useContext(expandedContext);
+    const UIScale = useContext(scaleContext);
+    const childRef = useRef();
 
-    const pressInHandler = (e) => {
-        setPressedIn(true);
-        viewRef?.current.measure((x, y, width, height, pageX, pageY) => {
-            if (pageY/SCREEN_HEIGHT >= 0.5) {
-                setIsDown(false);
-            } else {
-                setIsDown(true);
+    useEffect(() => {
+        if (!expanded) {
+            setTimeout(() => {
+                holdProgress.value = 0;
+            }, 150)
+        }
+    }, [expanded])
+
+    const closeContext = () => {
+        LayoutAnimation.configureNext({
+            duration: 100,
+            update: {type: "easeOut"}
+        });
+        setExpanded(false);
+        const curUIScale = UIScale.value;
+        let i = 1;
+        clearInterval(holdInterval.value)
+        holdInterval.value = setInterval(() => {
+            i = Math.max(i-0.083, 0);
+            UIScale.value = Math.min(interpolate(i,
+                [1, 0.5, 0],
+                [curUIScale, 1-(1-curUIScale)/5, 1]
+            ), 1);
+            if (i == 0) {
+                clearInterval(holdInterval.value);
             }
-            elementHeight.value=height;
-        })
+        }, 16.66)
     }
 
-    const longPressHandler = (e) => {
+    const onPressIn = (e) => {
+        childRef?.current.measure((x, y, width, height, pageX, pageY) => {
+            setElementProps({
+                x: pageX,
+                y: pageY,
+                width: width,
+                height: height
+            });
+        });
+    }
+
+    const onLongPress = (e) => {
         if (!expanded) {
-            setPressedIn(false)
-            setTouchX(e.nativeEvent.locationX);
-            setHold(true);
+            touchX.value = e.nativeEvent.locationX;
 
-            intervalRef.current = setInterval(() => {
-                holdTime.value+=50;
-                if (holdTime.value == 300) {
+            clearInterval(holdInterval.value);
+            holdInterval.value = setInterval(() => {
+                holdProgress.value = Math.min(holdProgress.value+0.083, 1);
+                UIScale.value = Math.max(UIScale.value-0.01/6, 0.98);
+                if (holdProgress.value == 1) {
+                    clearInterval(holdInterval?.value);
                     setExpanded(true);
-                    setHold(false);
-                    setExpandedIndex(index);
-
+                    if (typeof onExpand == "function") onExpand();
+                    let i = 0;
                     LayoutAnimation.configureNext({
                         duration: 100,
                         update: {type: "easeOut"}
-                    })
-                    clearInterval(intervalRef.current);
+                    });
+                    holdInterval.value = setInterval(() => {
+                        i = Math.min(i+0.055, 1);
+                        UIScale.value = interpolate(i,
+                            [0, 0.5, 1],
+                            [0.98, 0.92, 0.9]
+                        )
+                        if (i == 1) {
+                            clearInterval(holdInterval.value)
+                        }
+                    }, 16.66)
                 }
-            }, 50)
+            }, 16.66)
         }
     }
 
-    const pressOutHandler = () => {
-        setHold(false);
-        holdTime.value = 0;
-        clearInterval(intervalRef.current);
-        setPressedIn(false);
+    const onPressOut = (e) => {
+        if (!expanded) {
+            clearInterval(holdInterval.value);
+            holdProgress.value = 0;
+            holdInterval.value = setInterval(() => {
+                UIScale.value = Math.min(UIScale.value+0.1/12, 1);
+                if (UIScale.value == 1) {
+                    clearInterval(holdInterval.value);
+                }
+            })
+        }
     }
+
+    const scaleStyle = useAnimatedStyle(() => {
+        return holdProgress.value != 0? {
+            transform: [
+                {
+                    scale: 1 / UIScale.value
+                },
+                {
+                    translateX: (1-UIScale.value)*(elementProps.x-SCREEN_WIDTH/2)+(1/UIScale.value-1)*(elementProps.width/2)
+                },
+                {
+                    translateY: (1-UIScale.value)*(elementProps.y-SCREEN_HEIGHT/2)+(1/UIScale.value-1)*(elementProps.height/2)
+                }
+            ],
+            zIndex: 10
+        } : {
+            transform: [
+                {
+                    scale: 1
+                }
+            ],
+            zIndex: 0
+        }
+    });
+
+    const contextMenuStyle = useAnimatedStyle(() => {
+        return {
+            width: holdProgress.value*SCREEN_WIDTH,
+            left: interpolate(holdProgress.value,
+                [0, 1],
+                [touchX.value-elementProps.x, 0-elementProps.x]
+            ),
+        }
+    })
+
     return(
-        <Animatable.View
-            transition={["opacity", "scale"]}
-            style={[{
-                zIndex: expanded? 10: 0,
+        <Animated.View
+            style={[scaleStyle, {
+                zIndex: expanded? 10: 0
             }, style]}
+            pointerEvents={"auto"}
         >
             <TouchableWithoutFeedback
-                onPressIn={pressInHandler}
-                onLongPress={longPressHandler}
-                onPressOut={pressOutHandler}
+                onPress={() => {
+                    if (typeof onDismissal == "function") onDismissal();
+                    closeContext();
+                }}
             >
                 <View
-                    ref={viewRef}
-                >
-                    <Animatable.View
-                        transition={"scale"}
-                        duration={150}
-                        style={{
-                            transform: [
-                                {
-                                    scale: pressedIn && !(expanded || hold)? 0.975: 1
-                                }
-                            ],
-                            position: "relative"
-                        }}
-                    >
-                        <MetroTouchable disabled={expanded}>
-                            {children}
-                        </MetroTouchable>
-                    </Animatable.View>
-
-                    <Animatable.View
-                        transition={["left", "width"]}
-                        duration={hold? 300: 1}
-                        easing={"linear"}
-                        style={[{
-                            position: "absolute",
-                            paddingVertical: expanded? 10: 0,
-                            backgroundColor: hold || expanded? "white": "black",
-                            left: hold || expanded? 0: touchX,
-                            width: hold || expanded? SCREEN_WIDTH: 0,
-                            height: expanded? "auto": 2,
-                        }, isDown? {
-                            top: elementHeight.value-5
-                        }: {
-                            bottom: elementHeight.value+3
-                        }]}
-                    >
-                        {options?.map((option, index) => {
-                            return(
-                                <MetroTouchable>
-                                <TouchableWithoutFeedback
-                                    onPress={() => {
-                                        setExpanded(false);
-                                        setExpandedIndex(-1);
-                                        if (option.onPress) option.onPress();
-                                    }}
-                                >
-                                    <Text className="text-2xl p-2 pl-4" style={fonts.light}>
-                                        {option.label}
-                                    </Text>
-                                </TouchableWithoutFeedback>
-                                </MetroTouchable>
-                            )
-                        })}
-                    </Animatable.View>
-                </View>
+                    style={{
+                        position: "absolute",
+                        zIndex: -1, 
+                        backgroundColor: "black",
+                        opacity: 0.5,
+                        left: 0,
+                        top: 0,
+                        height: SCREEN_HEIGHT+100,
+                        width: SCREEN_WIDTH,
+                        display: expanded? "flex": "none",
+                        transform: [
+                            {
+                                translateY: -50-elementProps.y
+                            }
+                        ]
+                    }}
+                />
             </TouchableWithoutFeedback>
-        </Animatable.View>
-    )
+            <TouchableWithoutFeedback
+                onPressIn={onPressIn}
+                onLongPress={onLongPress}
+                onPressOut={onPressOut}
+            >
+                <Animated.View
+                    ref={childRef}
+                    //style={style}
+                >
+                <MetroTouchable
+                    children={children}
+                    //style={style}
+                    {...props}
+                    disabled={expanded}
+                />
+                </Animated.View>
+            </TouchableWithoutFeedback>
+            <Animated.View
+                style={[{
+                    position: "absolute",
+                    backgroundColor: "white",
+                    paddingVertical: 14,
+                    zIndex: 20
+                }, contextMenuStyle, !expanded && {
+                    height: 2,
+                    paddingVertical: 0
+                }, elementProps.y < SCREEN_HEIGHT/2? {
+                    top: elementProps.height
+                } : {
+                    bottom: elementProps.height
+                }]}
+            >
+                {options?.map((option, index) => {
+                    return(
+                        <MetroTouchable
+                            style={{
+                                marginVertical: 6,
+                                paddingLeft: 20
+                            }}
+                        >
+                            <TouchableWithoutFeedback
+                                onPress={() => {
+                                    closeContext();
+                                    option.onPress && option.onPress()
+                                }}
+                            >
+                                <Text
+                                    style={[fonts.light]}
+                                    className={"text-2xl"}
+                                >
+                                    {option.label}
+                                </Text>
+                            </TouchableWithoutFeedback>
+                        </MetroTouchable>
+                    );
+                })}
+            </Animated.View>
+        </Animated.View>
+    );
 }
 
-export default ContextFlatList;
-
-export { MetroContext }
+export default MetroContext;

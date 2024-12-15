@@ -17,7 +17,7 @@ import MetroView from "./MetroView";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("screen");
 
-export const bottomBarContext = createContext(() => {});
+export const tabContext = createContext(() => {});
 
 // slightly smaller snap to value to make the next screen peep out
 // Normal value is 20. Making it 0 for testing. 
@@ -36,12 +36,9 @@ const MetroTabs = ({
   currentScreenIndex = 0,
   rightOverlapWidth = 20
 }) => {
-  const [bottomBarElements, setBottomBarElements] = useState(null)
-  const [tabIndex, setTabIndex] = useState(0);
-  const [expanded, setExpanded] = useState(false);
-  //const tabIndx = useSharedValue({});
-
-  const tabShare = useSharedValue(0);
+  const tabIndex = useSharedValue(0);
+  const tabProgress = useSharedValue(0);
+  const bottomBarElementsRef = useSharedValue(null);
 
   const SCREEN_SNAP_INTERVAL = SCREEN_WIDTH - rightOverlapWidth;
   const screenCnt = screens.length;
@@ -77,18 +74,6 @@ const MetroTabs = ({
     ref.current?.scrollTo({index: index, animated: true})
   }, []);
 
-  const changeBottomBar = (data) => {
-    setBottomBarElements({
-      controls: data?.controls,
-      options: data?.options,
-      //oldControls: getBottomBarElements()
-    })
-  }
-
-  const getBottomBarElements = () => {
-    return bottomBarElements?.controls;
-  }
-
   // Get total header width so we can apply parallax accordingly
   const onHeaderLayout = useCallback(async (index, event) => {
     const {x, y, height, width} = event.nativeEvent.layout;
@@ -102,45 +87,33 @@ const MetroTabs = ({
   //     ?.scrollTo({ animatedRef: animatedRef, x: index * SCREEN_SNAP_INTERVAL, animated: true });
   // }
 
-  const listItem = ({item}) => {
+  const listItem = ({item, index}) => {
     return(
-      <bottomBarContext.Provider value={item.key == tabIndex? setBottomBarElements : () => {}}>
+      <tabContext.Provider value={{
+        bottomBar: bottomBarElementsRef,
+        currentTabIndex: tabIndex,
+        tabIndex: index
+      }}>
         <View 
           key={item.key} 
           style={[ styles.screenContainer, {width: SCREEN_SNAP_INTERVAL} ]}>
             {item.screen}
         </View>
-      </bottomBarContext.Provider>)
+      </tabContext.Provider>)
     }
 
   const onProgressChange = (offsetProgress, absoluteProgress) => {
     if (Math.round(absoluteProgress) >= screens.length) absoluteProgress=absoluteProgress-screens.length;
     scrollViewX.value = absoluteProgress*SCREEN_WIDTH;
-    // if (tabIndex != Math.round(absoluteProgress)) {
-    //   setTabIndex(Math.round(absoluteProgress))
-    // }
-    tabShare.value = Math.round(absoluteProgress);
-  }
-  
-  const onScrollPast = (index) => {
-    setTabIndex(index);
-  }
 
-
-  useAnimatedReaction(() => {
-    return tabShare.value
-  }, (data) => {
-    runOnJS(setTabIndex)(data)
-  }, [tabShare])
+    tabIndex.value = Math.round(absoluteProgress);
+    tabProgress.value = absoluteProgress;
+  }
 
   return (
     <MetroView style={[
       styles.container
     ]}>
-      <View onStartShouldSetResponder={(e) => {
-        if (expanded) setExpanded(false)
-        return expanded;
-      }}>
       <Animated.View
         style={[
           styles.tabContainer, 
@@ -195,13 +168,13 @@ const MetroTabs = ({
           overflow: "visible"
         }}
         
+        
         data={screens}
         renderItem={listItem}
       />
 
-      </View>
       {bottomBar && (
-        <CombinedBar expanded = {expanded} setExpanded={setExpanded} scrolled={scrollViewX.value%SCREEN_SNAP_INTERVAL == 0} {...bottomBarElements}/>
+        <CombinedBar progress={tabProgress} elements={bottomBarElementsRef}/>
       )}
     </MetroView>
   );

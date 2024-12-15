@@ -2,15 +2,17 @@ import { View , StyleSheet, Text, Dimensions, TouchableWithoutFeedback, Linking 
 import { AppTitle } from "../components/core/AppTitle"
 import { FlatList } from "react-native-gesture-handler";
 import { fonts } from "../styles/fonts";
-import { Delete, Save } from "react-native-feather";
+import { ChevronUp, Delete, Save } from "react-native-feather";
 import MetroTouchable from "../components/core/MetroTouchable";
 import { useRef, useState } from "react";
 import DTMFAssets from "../components/core/DTMFAssets";
 import { Audio } from 'expo-av';
 import { AsYouType } from "libphonenumber-js";
-import MetroContext from "../components/core/NewMetroContext";
+import MetroContext from "../components/core/MetroContext";
 import * as Animatable from "react-native-animatable"
 import MetroView from "../components/core/MetroView";
+import { useSharedValue } from "react-native-reanimated";
+import { Foundation } from "@expo/vector-icons";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -106,11 +108,167 @@ const ButtonItem = ({
     )
 }
 
+const CallButton = ({
+    number,
+    sim,
+    setSim
+}) => {
+    const [expanded, setExpanded] = useState(false);
+    const callSIMWidth = useSharedValue(0)
+    
+    const callButtonSIMIn = {
+        0: {
+            transform: [
+                {
+                    translateY: 0
+                },
+                {
+                    rotateX: "0deg"
+                },
+            ],
+            width: callSIMWidth.value
+        },
+        0.5: {
+            transform: [
+                {
+                    translateY: -30
+                },
+                {
+                    rotateX: "90deg"
+                }
+            ],
+            width: callSIMWidth.value
+        },
+        0.8: {
+            transform: [
+                {
+                    translateY: -30
+                },
+                {
+                    rotateX: "90deg"
+                }
+            ],
+            width: callSIMWidth.value*0.25
+        },
+        1: {
+            transform: [
+                {
+                    translateY: -30
+                },
+                {
+                    rotateX: "90deg"
+                }
+            ],
+            width: 0
+        }
+    }
+
+    const callButtonSIMOut = {
+        0: {
+            transform: [
+                {
+                    translateY: -30
+                },
+                {
+                    rotateX: "90deg"
+                }
+            ],
+        },
+        0.5: {
+            transform: [
+                {
+                    translateY: 0
+                },
+                {
+                    rotateX: "0deg"
+                }
+            ],
+        },
+        0.7: {
+            transform: [
+                {
+                    translateY: -10
+                },
+                {
+                    rotateX: "-30deg"
+                }
+            ]
+        },
+        1: {
+            transform: [
+                {
+                    translateY: 0
+                },
+                {
+                    rotateX: "0deg"
+                }
+            ]
+        }
+    }
+
+    return (
+        <MetroContext
+            style={[{
+                flex: 2.03,
+            }]}
+            options={[
+                {
+                    label: "SIM #1",
+                    onPress: () => {
+                        setExpanded(false);
+                        setSim(0);
+                    }
+                },
+                {
+                    label: "SIM #2",
+                    onPress: () => {
+                        setExpanded(false);
+                        setSim(1);
+                    }
+                }
+            ]}
+            onDismissal={() => { setExpanded(false) }}
+            onExpand={() => {
+                //console.log(callSIMWidth.value)
+
+                setExpanded(true);
+            }}
+        >
+            <View style={{
+                aspectRatio: 3.25 / 1,
+                width: "auto",
+                backgroundColor: "#383838",
+                flexDirection: "row"
+            }}>
+                <Text
+                    style={[itemStyle.callButtonText, { marginLeft: "auto" }]}
+                >
+                    call
+                </Text>
+                <Animatable.View
+                    style={{
+                        marginRight: "auto",
+                        flexDirection: "row",
+                    }}
+                    easing={"ease-in-out-sine"}
+                    duration={expanded? 250: 450}
+                    animation={expanded? callButtonSIMIn: callButtonSIMOut}
+                    onLayout={(e) => { callSIMWidth.value = e.nativeEvent.layout.width }}
+                >
+                    <Text style={itemStyle.callButtonText}> SIM #{sim+1} </Text>
+                    <ChevronUp stroke={"white"} width={25} style={{marginTop: "auto", marginBottom: "auto"}}/>
+                </Animatable.View>
+            </View>
+        </MetroContext>
+    )
+}
+
 const DialScreen = ({ navigation, route }) => {
     const [number, setNumber] = useState("");
     const deleteIntervalRef = useRef();
     const [zeroHeld, setZeroHeld] = useState(0);
     const [sim, setSim] = useState(0);
+    const [callExpanded, setCallExpanded] = useState(false);
 
     const deletePressIn = () => {
         deleteIntervalRef.current = setInterval(() => {
@@ -249,36 +407,12 @@ const DialScreen = ({ navigation, route }) => {
                         </ButtonItem>
                     </View>
                     <View style={itemStyle.buttonRow}>
-                        <MetroContext style={[{
-                            flex: 2.03,
-                        }]} options={[
-                            {
-                                label: "SIM #1",
-                                onPress: () => { setSim(0) }
-                            },
-                            {
-                                label: "SIM #2",
-                                onPress: () => { setSim(1) }
-                            }
-                        ]}>
-                            <View style={{
-                                aspectRatio: 3.25 / 1,
-                                width: "auto",
-                                backgroundColor: "#383838",
-                                flexDirection: "row"
-                            }}>
-                                <Text style={[itemStyle.callButtonText, { marginLeft: "auto" }]}>call</Text>
-                                <Animatable.Text
-                                    style={[itemStyle.callButtonText, { marginRight: "auto" }]}
-                                    animation={"bounceInDown"}
-                                > SIM #{sim+1}
-                                </Animatable.Text>
-                            </View>
-                        </MetroContext>
+                        <CallButton number={number} sim={sim} setSim={setSim}/>
                         {/* </MetroContext> */}
                         <ButtonItem disabled={ number.length==0 } style={itemStyle.saveButton}>
                             <View style={itemStyle.saveButton}>
-                                <Save width={20} stroke={number.length!=0? "white": "#ffffff7f"} strokeWidth={2} className="ml-auto mr-auto mt-auto"/>
+                                {/* <Save width={20} stroke={number.length!=0? "white": "#ffffff7f"} strokeWidth={2} className="ml-auto mr-auto mt-auto"/> */}
+                                <Foundation name="save" size={20} color={number.length!=0? "white": "#ffffff7f"} style={{ marginLeft: "auto", marginRight: "auto", marginTop: "auto"}}/>
                                 <Text
                                     style={[
                                         fonts.regular,
