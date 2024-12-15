@@ -48,9 +48,6 @@ const MetroTabs = ({
   // everything else is interpolated on this node
   const scrollViewX = useSharedValue(0);
   const headerItemsWidthArray = useSharedValue(new Array(screenCnt+1).fill(0));
-  const scrollHandler = useAnimatedScrollHandler((event) => {
-    scrollViewX.value = event.contentOffset.x;
-  });
 
   const animatedHeaderTransformStyle = useAnimatedStyle(() => {
     // does the actual parallax interpolation
@@ -71,14 +68,15 @@ const MetroTabs = ({
 
   // scrolls to the correct screen when one of the tabs are pressed
   const onTabPress = useCallback(async (index) => {
-    ref.current?.scrollTo({index: index, animated: true})
+    const count = (index - tabIndex.value) < 0? index - tabIndex.value + screens.length: index - tabIndex.value;
+    ref.current?.scrollTo({count: count, animated: true})
   }, []);
 
   // Get total header width so we can apply parallax accordingly
   const onHeaderLayout = useCallback(async (index, event) => {
-    const {x, y, height, width} = event.nativeEvent.layout;
+    const {width} = event.nativeEvent.layout;
     headerItemsWidthArray.value = [...headerItemsWidthArray.value];
-    headerItemsWidthArray.value[index+1] = headerItemsWidthArray.value[index] + width*-1; // negative cause header translates to left
+    headerItemsWidthArray.value[index] = (headerItemsWidthArray.value[index-1] || 0) + width*-1; // negative cause header translates to left
   }, []);
 
   // const setTabIndex = (index) => {
@@ -121,36 +119,46 @@ const MetroTabs = ({
           {width: SCREEN_WIDTH*screenCnt}
         ]}
       >
+        <HeaderItem
+          key={0}
+          item={screens[1]}
+          index={1}
+          onPress={onTabPress}
+          maxLen={screens.length}
+          scrollViewX={scrollViewX}
+          onLayout={(event) => onHeaderLayout(0, event)}
+          screenSnapInterval={SCREEN_SNAP_INTERVAL}
+        />
         {screens.map((item, index) => (
           <HeaderItem
-            key={index}
+            key={index+1}
             item={item}
             index={index}
             onPress={onTabPress}
             maxLen={screens.length}
             scrollViewX={scrollViewX}
-            onLayout={(event) => onHeaderLayout(index, event)}
+            onLayout={(event) => onHeaderLayout(index+1, event)}
             screenSnapInterval={SCREEN_SNAP_INTERVAL}
           />
         ))}
           <HeaderItem
-            key={0}
+            key={screens.length+1}
             item={screens[0]}
             index={0}
             onPress={onTabPress}
             maxLen={screens.length}
             scrollViewX={scrollViewX}
-            onLayout={(event) => onHeaderLayout(0, event)}
+            onLayout={(event) => onHeaderLayout(screens.length+1, event)}
             screenSnapInterval={SCREEN_SNAP_INTERVAL}
           />
           <HeaderItem
-            key={1}
+            key={screens.length+2}
             item={screens[1]}
             index={1}
             onPress={onTabPress}
             maxLen={screens.length}
             scrollViewX={scrollViewX}
-            onLayout={(event) => onHeaderLayout(1, event)}
+            onLayout={(event) => onHeaderLayout(screens.length+2, event)}
             screenSnapInterval={SCREEN_SNAP_INTERVAL}
           />
       </Animated.View>
@@ -167,7 +175,6 @@ const MetroTabs = ({
         style={{
           overflow: "visible"
         }}
-        
         
         data={screens}
         renderItem={listItem}

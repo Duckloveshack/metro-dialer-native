@@ -11,6 +11,8 @@ const MetroContext = ({
     options,
     onExpand,
     onDismissal,
+    onPressIn,
+    onPressOut,
     children,
     style,
     ...props
@@ -59,15 +61,19 @@ const MetroContext = ({
         }, 16.66)
     }
 
-    const onPressIn = (e) => {
-        childRef?.current.measure((x, y, width, height, pageX, pageY) => {
-            setElementProps({
-                x: pageX,
-                y: pageY,
-                width: width,
-                height: height
+    const onPressInTouchable = (e) => {
+        if (!expanded) {
+            childRef?.current.measure((x, y, width, height, pageX, pageY) => {
+                setElementProps({
+                    x: pageX,
+                    y: pageY,
+                    width: width,
+                    height: height
+                });
             });
-        });
+
+            if (typeof onPressIn == "function") onPressIn();
+        }
     }
 
     const onLongPress = (e) => {
@@ -81,6 +87,7 @@ const MetroContext = ({
                 if (holdProgress.value == 1) {
                     clearInterval(holdInterval?.value);
                     setExpanded(true);
+                    if (typeof onPressOut == "function") onPressOut();
                     if (typeof onExpand == "function") onExpand();
                     let i = 0;
                     LayoutAnimation.configureNext({
@@ -102,7 +109,7 @@ const MetroContext = ({
         }
     }
 
-    const onPressOut = (e) => {
+    const onPressOutTouchable = (e) => {
         if (!expanded) {
             clearInterval(holdInterval.value);
             holdProgress.value = 0;
@@ -111,7 +118,9 @@ const MetroContext = ({
                 if (UIScale.value == 1) {
                     clearInterval(holdInterval.value);
                 }
-            })
+            });
+
+            if (typeof onPressOut == "function") onPressOut();
         }
     }
 
@@ -182,9 +191,9 @@ const MetroContext = ({
                 />
             </TouchableWithoutFeedback>
             <TouchableWithoutFeedback
-                onPressIn={onPressIn}
+                onPressIn={onPressInTouchable}
                 onLongPress={onLongPress}
-                onPressOut={onPressOut}
+                onPressOut={onPressOutTouchable}
             >
                 <Animated.View
                     ref={childRef}

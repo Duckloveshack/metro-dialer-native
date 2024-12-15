@@ -4,4 +4,4 @@ My ill-fated attempt to recreate the dialer app from Windows Phone 8.1 in React 
 
 See the [Metro-Browser-Native](https://github.com/god-s-perfect-idiot/metro-browser-native) and [Metro-Clock-Native](https://github.com/abhra0897/metro-clock-native/tree/master) projects which have provided much of the code and structure for this project <3 (The launch / build stuff is in the former repo)
 
-Contributions very welcome!
+Contributions are very welcome!

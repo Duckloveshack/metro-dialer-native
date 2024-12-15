@@ -25,7 +25,9 @@ const Button = ({
       style={style}
       className={held? `bg-[#a013ec]`: ""}
     >
-      <TouchableWithoutFeedback onPress={onPress}>
+      <TouchableWithoutFeedback onPress={() => {
+        if (!disabled && typeof onPress == "function") onPress
+      }}>
         <View className={`flex items-center border-2 border-solid ${disabled ? "border-gray-600" : "border-white"} py-1.5 px-4 ${classOverride}`}>
           <Text className={`${disabled ? "text-gray-600" : "text-white"} text-lg ${isLowerCase && "lowercase"}`} style={fonts.regular}>
             {text}

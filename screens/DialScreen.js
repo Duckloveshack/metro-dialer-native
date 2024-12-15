@@ -113,6 +113,7 @@ const CallButton = ({
     sim,
     setSim
 }) => {
+    const [held, setHeld] = useState(false)
     const [expanded, setExpanded] = useState(false);
     const callSIMWidth = useSharedValue(0)
     
@@ -228,20 +229,18 @@ const CallButton = ({
                 }
             ]}
             onDismissal={() => { setExpanded(false) }}
-            onExpand={() => {
-                //console.log(callSIMWidth.value)
-
-                setExpanded(true);
-            }}
+            onExpand={() => { setExpanded(true); }}
+            onPressIn={() => { setHeld(true) }}
+            onPressOut={() => { setHeld(false) }}
         >
             <View style={{
                 aspectRatio: 3.25 / 1,
                 width: "auto",
-                backgroundColor: "#383838",
+                backgroundColor: (held && !expanded && number.length !== 0 )? "#a013ec": "#383838",
                 flexDirection: "row"
             }}>
                 <Text
-                    style={[itemStyle.callButtonText, { marginLeft: "auto" }]}
+                    style={[itemStyle.callButtonText, { marginLeft: "auto", color: number.length != 0? "white": "#ffffff7f" }]}
                 >
                     call
                 </Text>
@@ -255,8 +254,8 @@ const CallButton = ({
                     animation={expanded? callButtonSIMIn: callButtonSIMOut}
                     onLayout={(e) => { callSIMWidth.value = e.nativeEvent.layout.width }}
                 >
-                    <Text style={itemStyle.callButtonText}> SIM #{sim+1} </Text>
-                    <ChevronUp stroke={"white"} width={25} style={{marginTop: "auto", marginBottom: "auto"}}/>
+                    <Text style={[itemStyle.callButtonText, { color: number.length != 0? "white": "#ffffff7f" }]}> (SIM #{sim+1}) </Text>
+                    <ChevronUp stroke={number.length != 0? "white": "#ffffff7f"} width={25} style={{marginTop: "auto", marginBottom: "auto"}}/>
                 </Animatable.View>
             </View>
         </MetroContext>

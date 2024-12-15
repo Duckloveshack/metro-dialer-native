@@ -7,17 +7,19 @@ import Link from "../core/Link";
 import { red } from "react-native-redash";
 import { FadeInUp, runOnJS, useAnimatedReaction } from "react-native-reanimated";
 
-export const CombinedBar = ({ options, controls, oldControls, disabled = false, progress, elements }) => {
+export const CombinedBar = ({disabled = false, progress, elements }) => {
     const AnimatedView = Animatable.createAnimatableComponent(View);
 
     const [bottomBarElements, setBottomBarElements] = useState(null);
+    const [previousControls, setPreviousControls] = useState(null);
     const [expanded, setExpanded] = useState(false);
 
     useAnimatedReaction(
       () => {
         return elements.value;
       },
-      (result) => {
+      (result, previous) => {
+        runOnJS(setPreviousControls)(previous?.controls)
         runOnJS(setBottomBarElements)(result)
       },
       [elements]
@@ -47,7 +49,7 @@ export const CombinedBar = ({ options, controls, oldControls, disabled = false, 
         <Animatable.View className={`bg-[#222222] w-full flex flex-col`}
           transition={["height"]}
           easing="ease-out-quart"
-          duration={options? 250: 150}
+          duration={bottomBarElements?.options? 250: 150}
           style={{
             // if this looks ugly, its probable because of the hardcoded values
             height: expanded ? (bottomBarElements.options? 350: 80) : 60,
@@ -63,24 +65,34 @@ export const CombinedBar = ({ options, controls, oldControls, disabled = false, 
           <View style={{ width: "100%", flexDirection: "row", height: expanded? 80: 55, marginBottom: -10 }}>
             <View style={{ width: '15%' }} />
             <Animatable.View style={{ width: '70%', justifyContent: 'center', flexDirection: 'row'}}>
-              {/* {oldControls?.map((control, index) => {
-                console.log(control)
-                return (
-                  <View
+              {(previousControls && !expanded) && (
+                <View
                   style={{
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    marginHorizontal: 16,
-                    marginVertical: 8,
-                    marginBottom: 12,
-                    paddingHorizontal: 4
+                    position: "absolute",
+                    flexDirection: "row",
+                    height: 60,
+                    overflow: "hidden"
                   }}
-                  key={Math.random()}>
-                    <RoundedButton Icon={control.Icon} action={control.onPress} disabled={disabled} bounce={!expanded && progress} disappear={true}/>
-                  </View>
-                )
-              })} */}
+                >
+                  {previousControls?.map((control, index) => {
+                    return (
+                      <View
+                      style={{
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        marginHorizontal: 16,
+                        marginVertical: 8,
+                        marginBottom: 12,
+                        paddingHorizontal: 4
+                      }}
+                      key={Math.random()}>
+                        <RoundedButton icon={control.icon} disabled={disabled} bounce={false} disappear={true}/>
+                      </View>
+                    )
+                  })}
+                </View>
+              )}
               {bottomBarElements?.controls.map((control, index) => {
                 return (
                   <View

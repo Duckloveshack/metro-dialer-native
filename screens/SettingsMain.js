@@ -41,28 +41,12 @@ const SettingsMain = ({ navigation }) => {
                 <PageTitle title="phone"/>
                 <ScrollView overScrollMode="always" contentContainerStyle={styles.tabContainer}>
                     <SettingsText key={0} classOverride={"mb-4"} title="My phone number">+1 (425) 001-0001</SettingsText>
-                    <SettingsSwitch key={1} classOverride={"mb-4"} isOn={true} title="Use default voicemail number"/>
-                    <Select key={2} disabled={false} classOverride={"mb-4"} title="When calling" options={[
-                        { name: "ask me which SIM to use", value: "ask" },
-                        { name: "use SIM #1: Verizon", value: "0" },
-                        { name: "use SIM #2: Orange", value: "1", disabled: true }
-                    ]} onChange={() => {}}/>
+                    <SettingsSwitch isOn={false} title={"Use Dialer as the default phone app"} classOverride={"mb-4"}/>
                       <Select key={3} disabled={false} classOverride={"mb-4"} defaultOption="2" title="Theme" options={[
                         { name: "system", value: "system" },
                         { name: "light", value: "light" },
                         { name: "dark", value: "dark" }
                     ]} onChange={() => {}}/>
-                    <View style={{
-                      paddingRight: "auto",
-                      marginEnd: "auto"
-                    }}>
-                      <Button
-                        text={"modal test"}
-                        onPress={() => {
-                          setModal(true);
-                        }}
-                      />
-                    </View>
                 </ScrollView>
             </View>
         </View>
