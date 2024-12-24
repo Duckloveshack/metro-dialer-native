@@ -13,6 +13,7 @@ import * as Animatable from "react-native-animatable"
 import MetroView from "../components/core/MetroView";
 import { useSharedValue } from "react-native-reanimated";
 import { Foundation } from "@expo/vector-icons";
+import SIMSwitch from "../components/core/SIMSwitch";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -312,7 +313,17 @@ const DialScreen = ({ navigation, route }) => {
     return (
         <MetroView>
         <View style={styles.container}>
-            <AppTitle title="Fake GSM Network"/>
+            <AppTitle
+                title="PHONE"
+                customSubtitle={
+                    <View style={{ flexDirection: "row" }}>
+                        <Text style={{ color: "#7f7f7f" }}>Call using </Text>
+                        <Text style={{ color: "#a013ec" }}>test</Text>
+                    </View>
+                }
+            >
+                <SIMSwitch/>
+            </AppTitle>
             <View style={styles.screenContainer}>
                 <View style={styles.dialContainer}>
                     <Text 
@@ -406,8 +417,27 @@ const DialScreen = ({ navigation, route }) => {
                         </ButtonItem>
                     </View>
                     <View style={itemStyle.buttonRow}>
-                        <CallButton number={number} sim={sim} setSim={setSim}/>
+                        {/* <CallButton number={number} sim={sim} setSim={setSim}/> */}
                         {/* </MetroContext> */}
+                        <ButtonItem disabled={ number.length==0 } style={itemStyle.callButton}>
+                            <TouchableWithoutFeedback
+                                onPress={() => {
+                                    if (number.length != 0) {
+                                        Linking.openURL(`tel:${number}`);
+                                    }
+                                }}
+                            >
+                                <View style={itemStyle.callButton}>
+                                    <Text style={[fonts.regular, itemStyle.callButtonText, {
+                                        color: number.length != 0? "white": "#ffffff7f",
+                                        marginLeft: "auto",
+                                        marginRight: "auto"
+                                    }]}>
+                                        call
+                                    </Text>
+                                </View>
+                            </TouchableWithoutFeedback>
+                        </ButtonItem>
                         <ButtonItem disabled={ number.length==0 } style={itemStyle.saveButton}>
                             <View style={itemStyle.saveButton}>
                                 {/* <Save width={20} stroke={number.length!=0? "white": "#ffffff7f"} strokeWidth={2} className="ml-auto mr-auto mt-auto"/> */}
@@ -437,7 +467,7 @@ const styles = StyleSheet.create({
       backgroundColor: "black"
     },
     screenContainer: {
-        height: SCREEN_HEIGHT-20, // account for container padding top (120 original)
+        height: SCREEN_HEIGHT-47, // account for container padding top (120 original)
     },
     dialContainer: {
         marginBottom: "auto",

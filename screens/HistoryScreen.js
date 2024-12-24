@@ -1,5 +1,5 @@
 import React, { Component, useContext } from "react";
-import { StyleSheet, View, Text, FlatList, Image, ScrollView } from "react-native";
+import { StyleSheet, View, Text, FlatList, Image, ScrollView, Platform } from "react-native";
 import { tabContext } from "../components/core/MetroTabs";
 import { Voicemail, Book, Search, User } from "react-native-feather";
 import { fonts } from "../styles/fonts";
@@ -7,11 +7,11 @@ import RoundedButton from "../components/core/RoundedButton";
 //import { ScrollView } from "react-native-gesture-handler";
 import MetroContext from "../components/core/MetroContext";
 import MetroScroll from "../components/core/MetroScroll";
-import { runOnJS, useAnimatedReaction } from "react-native-reanimated";
+import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, interpolate } from "react-native-reanimated";
 import Foundation from "@expo/vector-icons/Foundation"
 
 const HistoryScreen = ({navigation, route}) => {
-  const { bottomBar, currentTabIndex, tabIndex } = useContext(tabContext);
+  const { bottomBar, currentTabIndex, tabIndex, tabProgress } = useContext(tabContext);
 
   const onVoicemailButton = () => { console.log("voicemail") }
   const onKeypadButton = () => { navigation.navigate("DialScreen") }
@@ -58,29 +58,54 @@ const HistoryScreen = ({navigation, route}) => {
             onPress: null,
             disabled: true
           },
-        ]}
+        ], visible: true}
       }
     },
     [currentTabIndex]
   );
 
+  const historyDescritionStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateX: interpolate(
+            tabProgress.value%0.5,
+            [-0.5, -0.25, 0.25, 0.5],
+            [50, 50, -50, -50]
+          )
+        }
+      ]
+    }
+  })
+
   const historyItem = ({item, index}) => {
     return(
       <MetroContext
-        options={item.context_options}
+        options={[
+          {
+            label: "details"
+          },
+          {
+            label: "delete"
+          },
+          {
+            label: "add to speed dial"
+          }
+        ]}
+        canTilt={false}
       >
       <View style={styles.itemContainer}>
         <View style={itemStyles.infoContainer}>
           <Text style={[itemStyles.number, fonts.light]}>
             {item.number}
           </Text>
-          <Text style={[itemStyles.details, fonts.light]}>
+          <Animated.Text style={[itemStyles.details, fonts.light, historyDescritionStyle]}>
             Outgoing, Thu 7:18p
-          </Text>
+          </Animated.Text>
         </View>
         <View style={itemStyles.button}>
             {/* <RoundedButton Icon={<User width={20} stroke={"white"} strokeWidth={3}/>} action={() => {}}/> */}
-            <RoundedButton icon={"torso"} action={() => {}}/>
+            <RoundedButton icon={"torsos"} action={() => { navigation.navigate("ContactInfoMain") }}/>
           </View>
       </View>
       </MetroContext>
@@ -89,147 +114,33 @@ const HistoryScreen = ({navigation, route}) => {
 
   const sampleData = [
     {
-      number: "+1 (425) 001-0001",
-      context_options: [
-        {
-          label: "details"
-        },
-        {
-          label: "delete"
-        },
-        {
-          label: "add to speed dial"
-        }
-      ]
+      number: "+1 (425) 001-0001"
     },
     {
-      number: "+1 (425) 001-0001",
-      context_options: [
-        {
-          label: "delete"
-        }
-      ]
+      number: "+1 (425) 001-0001"
     },
     {
-      number: "+1 (425) 001-0001",
-      context_options: [
-        {
-          label: "delete"
-        }
-      ]
+      number: "+1 (425) 001-0001"
     },
     {
-      number: "+1 (425) 001-0001",
-      context_options: [
-        {
-          label: "delete"
-        },
-      ]
+      number: "+1 (425) 001-0001"
     },
     {
-      number: "+1 (425) 001-0001",
-      context_options: [
-        {
-          label: "delete"
-        }
-      ]
+      number: "+1 (425) 001-0001"
     },
     {
-      number: "+1 (425) 001-0001",
-      context_options: [
-        {
-          label: "delete"
-        },
-      ]
+      number: "+1 (425) 001-0001"
     },
     {
-      number: "+1 (425) 001-0001",
-      context_options: [
-        {
-          label: "delete"
-        }
-      ]
+      number: "+1 (425) 001-0001"
     },
     {
-      number: "+1 (425) 001-0001",
-      context_options: [
-        {
-          label: "delete"
-        },
-      ]
+      number: "+1 (425) 001-0001"
     },
     {
-      number: "+1 (425) 001-0001",
-      context_options: [
-        {
-          label: "details"
-        },
-        {
-          label: "delete"
-        },
-        {
-          label: "add to speed dial"
-        }
-      ]
-    },
-    {
-      number: "+1 (425) 001-0001",
-      context_options: [
-        {
-          label: "details"
-        },
-        {
-          label: "delete"
-        },
-        {
-          label: "add to speed dial"
-        }
-      ]
-    },
-    {
-      number: "+1 (425) 001-0001",
-      context_options: [
-        {
-          label: "details"
-        },
-        {
-          label: "delete"
-        },
-        {
-          label: "add to speed dial"
-        }
-      ]
+      number: "+1 (425) 001-0001"
     },
   ]
-
-  // return (
-  //   <View style={styles.container}>
-  //       {sampleData? (        
-  //         // <ContextFlatList
-  //         //   data={sampleData}
-  //         //   renderItem={historyItem}
-  //         // />
-  //         // <ScrollView
-  //         //   style={{
-  //         //     zIndex: 1,
-  //         //     backgroundColor: "red"
-  //         //   }}
-  //         // >
-  //           {sampleData.map((data, index) => {
-  //             return (
-  //               <MetroContext
-  //                 options={data.context_options}
-  //               >
-  //                 {historyItem({item: data, index: index})}
-  //               </MetroContext>
-  //             )
-  //           })}
-  //         // </ScrollView>
-  //       ) : (
-  //         <Text style={[styles.placeholder, fonts.light]}>Calls you make or receive will appear here. Tap the keypad icon to call someone.</Text>
-  //       )}
-  //   </View>
-  // );
 
   return sampleData? (
     <ScrollView style={[styles.container]}>
@@ -252,6 +163,7 @@ const styles = StyleSheet.create({
     container: {
       backgroundColor: "black",
       paddingTop: 10,
+      marginBottom: 70,
     },
     list: {
       paddingBottom: 30,

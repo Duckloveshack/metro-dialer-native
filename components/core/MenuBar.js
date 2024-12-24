@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { ScrollView, Text, TouchableWithoutFeedback, View, Animated, Easing } from "react-native";
 import RoundedButton from "./RoundedButton";
 import { fonts } from "../../styles/fonts";
@@ -6,6 +6,7 @@ import * as Animatable from "react-native-animatable"
 import Link from "../core/Link";
 import { red } from "react-native-redash";
 import { FadeInUp, runOnJS, useAnimatedReaction } from "react-native-reanimated";
+import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 
 export const CombinedBar = ({disabled = false, progress, elements }) => {
     const AnimatedView = Animatable.createAnimatableComponent(View);
@@ -23,7 +24,7 @@ export const CombinedBar = ({disabled = false, progress, elements }) => {
         runOnJS(setBottomBarElements)(result)
       },
       [elements]
-    )
+    );
 
     return (
       <View style={{
@@ -46,20 +47,28 @@ export const CombinedBar = ({disabled = false, progress, elements }) => {
             }}/>
           </TouchableWithoutFeedback>
         )}
-        <Animatable.View className={`bg-[#222222] w-full flex flex-col`}
-          transition={["height"]}
-          easing="ease-out-quart"
-          duration={bottomBarElements?.options? 250: 150}
-          style={{
-            // if this looks ugly, its probable because of the hardcoded values
-            height: expanded ? (bottomBarElements.options? 350: 80) : 60,
-            marginBottom: 0,
-            flexDirection: "column",
-            backgroundColor: "#222",
+        <Animatable.View style={{
             position: "absolute",
             bottom: 0,
             width: "100%",
-            zIndex: 10
+            zIndex: 10,
+        }} animation={"slideInUp"} duration={200} delay={400} easing={"ease-out-circ"}>
+        <Animatable.View animation={!useIsFocused() && "slideOutDown"} duration={200}>
+        <Animatable.View className={`bg-[#222222] w-full flex flex-col`}
+          transition={["height", "translateY"]}
+          easing="ease-out-quart"
+          duration={200}
+          style={{
+            // if this looks ugly, its probable because of the hardcoded values
+            height: expanded ? (bottomBarElements?.options? 350: 80) : 60,
+            marginBottom: 0,
+            flexDirection: "column",
+            backgroundColor: "#222",
+            transform: [
+              {
+                translateY: !bottomBarElements?.visible? 60: 0
+              }
+            ]
           }}
         >
           <View style={{ width: "100%", flexDirection: "row", height: expanded? 80: 55, marginBottom: -10 }}>
@@ -87,7 +96,7 @@ export const CombinedBar = ({disabled = false, progress, elements }) => {
                         paddingHorizontal: 4
                       }}
                       key={Math.random()}>
-                        <RoundedButton icon={control.icon} disabled={disabled} bounce={false} disappear={true}/>
+                        <RoundedButton icon={control.icon} disabled={disabled} bounce={false} disappear={bottomBarElements.visible}/>
                       </View>
                     )
                   })}
@@ -165,6 +174,8 @@ export const CombinedBar = ({disabled = false, progress, elements }) => {
                 })}
             </View>
           )}
+        </Animatable.View>
+        </Animatable.View>
         </Animatable.View>
         </View>
       );

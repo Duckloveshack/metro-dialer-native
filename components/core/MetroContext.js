@@ -9,6 +9,7 @@ const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("screen");
 
 const MetroContext = ({
     options,
+    canTilt=true,
     onExpand,
     onDismissal,
     onPressIn,
@@ -204,6 +205,7 @@ const MetroContext = ({
                     //style={style}
                     {...props}
                     disabled={expanded}
+                    canTilt = {canTilt}
                 />
                 </Animated.View>
             </TouchableWithoutFeedback>
@@ -226,8 +228,8 @@ const MetroContext = ({
                     return(
                         <MetroTouchable
                             style={{
-                                marginVertical: 6,
-                                paddingLeft: 20
+                                marginVertical: 3,
+                                paddingLeft: 10
                             }}
                         >
                             <TouchableWithoutFeedback

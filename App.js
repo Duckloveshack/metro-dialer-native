@@ -1,4 +1,4 @@
-import { StatusBar, View, Easing } from 'react-native';
+import { StatusBar, View, Easing, Dimensions, Text } from 'react-native';
 import MetroTabs from './components/core/MetroTabs';
 import * as Font from 'expo-font';
 import { AppTitle } from './components/core/AppTitle';
@@ -10,6 +10,10 @@ import HistoryScreen from "./screens/HistoryScreen"
 import SpeedDialScreen from './screens/SpeedDialScreen';
 import SettingsMain from "./screens/SettingsMain"
 import DialScreen from './screens/DialScreen';
+import ContactInfoMain from './screens/ContactInfoMain';
+import SIMSwitch from './components/core/SIMSwitch';
+
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("screen");
 
 const Stack = createStackNavigator();
 
@@ -123,8 +127,24 @@ export default function App() {
       }>
         <Stack.Screen name="PhoneMain" component={PhoneMain} />
         <Stack.Screen name="SettingsMain" component={SettingsMain} options={{}}/>
+        <Stack.Screen name="ContactInfoMain" component={ContactInfoMain}/>
         <Stack.Screen name="DialScreen" component={DialScreen} options={{
-          cardStyleInterpolator: CardStyleInterpolators.forBottomSheetAndroid
+          cardStyleInterpolator: ({ current, next, layouts}) => {
+            return(
+              {
+                cardStyle: {
+                  transform: [
+                    {
+                      translateY: current.progress.interpolate({
+                        inputRange: [0, 0.75, 0.9, 1],
+                        outputRange: [SCREEN_HEIGHT, SCREEN_HEIGHT*0.2, SCREEN_HEIGHT*0.1, 0]
+                      })
+                    }
+                  ]
+                }
+              }
+            )
+          }
         }}/>
         {/* Add more screens here so we can navigate to them */}
       </Stack.Navigator>
@@ -151,8 +171,17 @@ const PhoneMain = ({navigation, route}) => {
 
   return (
     <View style={{backgroundColor: "black", }}>
-
-      <AppTitle title={carrier}></AppTitle>
+        <AppTitle
+          title="PHONE"
+          customSubtitle={
+            <View style={{ flexDirection: "row" }}>
+              <Text style={{ color: "#7f7f7f" }}>Call using </Text>
+              <Text style={{ color: "#a013ec" }}>test</Text>
+            </View>
+          }
+        >
+          <SIMSwitch/>
+        </AppTitle>
       <MetroTabs
         rightOverlapWidth={0}
         screens={[

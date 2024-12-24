@@ -52,14 +52,16 @@ const MetroTabs = ({
   const animatedHeaderTransformStyle = useAnimatedStyle(() => {
     // does the actual parallax interpolation
     const headerX = interpolate(
-      scrollViewX.value, 
+      tabProgress.value, 
       new Array(screenCnt+1)
         .fill(0)
-        .map((_, i) => SCREEN_SNAP_INTERVAL * i),
+        .map((_, i) =>  i),
       // max parallax translate for the header
       // negative because the header is translated to the left
       headerItemsWidthArray.value,
     ); 
+
+    //console.log(headerItemsWidthArray.value)
 
     return {
       transform: [{ translateX: headerX }]
@@ -76,7 +78,7 @@ const MetroTabs = ({
   const onHeaderLayout = useCallback(async (index, event) => {
     const {width} = event.nativeEvent.layout;
     headerItemsWidthArray.value = [...headerItemsWidthArray.value];
-    headerItemsWidthArray.value[index] = (headerItemsWidthArray.value[index-1] || 0) + width*-1; // negative cause header translates to left
+    headerItemsWidthArray.value[index] = ( headerItemsWidthArray.value[index-1] || 0 ) - width
   }, []);
 
   // const setTabIndex = (index) => {
@@ -90,7 +92,8 @@ const MetroTabs = ({
       <tabContext.Provider value={{
         bottomBar: bottomBarElementsRef,
         currentTabIndex: tabIndex,
-        tabIndex: index
+        tabIndex: index,
+        tabProgress: tabProgress
       }}>
         <View 
           key={item.key} 
@@ -101,6 +104,8 @@ const MetroTabs = ({
     }
 
   const onProgressChange = (offsetProgress, absoluteProgress) => {
+    //console.log(absoluteProgress)
+
     if (Math.round(absoluteProgress) >= screens.length) absoluteProgress=absoluteProgress-screens.length;
     scrollViewX.value = absoluteProgress*SCREEN_WIDTH;
 
@@ -121,8 +126,8 @@ const MetroTabs = ({
       >
         <HeaderItem
           key={0}
-          item={screens[1]}
-          index={1}
+          item={screens[screens.length-1]}
+          index={-1}
           onPress={onTabPress}
           maxLen={screens.length}
           scrollViewX={scrollViewX}
@@ -144,7 +149,7 @@ const MetroTabs = ({
           <HeaderItem
             key={screens.length+1}
             item={screens[0]}
-            index={0}
+            index={screens.length+1}
             onPress={onTabPress}
             maxLen={screens.length}
             scrollViewX={scrollViewX}
@@ -154,7 +159,7 @@ const MetroTabs = ({
           <HeaderItem
             key={screens.length+2}
             item={screens[1]}
-            index={1}
+            index={screens.length+2}
             onPress={onTabPress}
             maxLen={screens.length}
             scrollViewX={scrollViewX}
@@ -165,7 +170,7 @@ const MetroTabs = ({
       <Carousel
         loop
         width={SCREEN_WIDTH*2}
-        height={SCREEN_HEIGHT-175}
+        height={SCREEN_HEIGHT-195}
         onProgressChange={onProgressChange}
         pagingEnabled={true}
         ref={ref}
@@ -231,7 +236,7 @@ const styles = StyleSheet.create({
     overflow: "visible"
   },
   screenContainer: {
-    height: SCREEN_HEIGHT - 170, // account for container padding top (120 original)
+    height: SCREEN_HEIGHT - 180, // account for container padding top (120 original)
   },
   screenList: {
     paddingEnd: 20,

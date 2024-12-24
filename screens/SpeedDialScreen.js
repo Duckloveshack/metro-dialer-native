@@ -55,7 +55,7 @@ const SpeedDialScreen = ({ navigation, route}) => {
             text: "settings",
             onPress: onSettingsLink
           }
-        ]}
+        ], visible: true}
       }
     },
     [currentTabIndex]
